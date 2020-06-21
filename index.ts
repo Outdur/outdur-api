@@ -3,20 +3,26 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 
+import { errorHandler } from "./src/middleware/error";
+import { notFoundHandler } from "./src/middleware/notFound";
+
 require('dotenv').config();
 
-if (!process.env.ITE) {
+if (!process.env.PORT) {
     process.exit(1);
 }
-console.log(process.env.PORT)
 
-const PORT: number = parseInt(process.env.ITE as string, 10);
+const PORT: number = parseInt(process.env.PORT as string, 10);
 
 const app = express();
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+app.use('/', express.Router().get("/", (req, res) => res.status(200).json({ message: "Hello" })));
+app.use(errorHandler);
+app.use(notFoundHandler);
 
 const server = app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
