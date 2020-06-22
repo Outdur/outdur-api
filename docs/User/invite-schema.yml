@@ -1,0 +1,24 @@
+components:
+     schemas:
+       Invite:
+         type: object
+         properties:
+           id:
+               type: integer
+           email:
+               type: string
+           phone:
+               type: string
+           code:
+               type: integer
+           user:
+                type: integer  
+           status:
+                type: string       
+         example:
+              id: 1
+              email: outdur@example.com 
+              phone: 09010000000   
+              code: AX0R1FH5H
+              user: 32
+              status: Pending

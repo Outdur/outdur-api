@@ -5,6 +5,7 @@ import helmet from "helmet";
 
 import { errorHandler } from "./src/middleware/error";
 import { notFoundHandler } from "./src/middleware/notFound";
+const api_doc = require('./docs');
 
 require('dotenv').config();
 
@@ -21,6 +22,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/', express.Router().get("/", (req, res) => res.status(200).json({ message: "Hello" })));
+app.use('/api/docs', api_doc);
+
 app.use(errorHandler);
 app.use(notFoundHandler);
 

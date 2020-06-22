@@ -1,0 +1,27 @@
+components:
+     schemas:
+       User:
+         type: object
+         properties:
+           id:
+               type: integer
+           user_id:
+               type: string    
+           firstname:
+               type: string    
+           lastname:
+               type: string        
+           email:
+               type: string
+           phone:
+               type: string
+           status:
+                type: string       
+         example:
+              id: 1
+              user_id: HGU6T-9UGGY-GIHGF-YT65R
+              firstname: Chibuzo
+              lastname: Okeke
+              email: outdur@example.com 
+              phone: 09010000000   
+              status: Pending
