@@ -1,0 +1,173 @@
+path:
+    /invite/send:
+      post:
+        summary: Send invite
+        tags: [Invite]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                example:
+                  contact: 
+                    - 'example@email.com'    
+        responses:
+          "201":
+            description: Send invite to phone or email
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                    example:
+                      status: true    
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    message:
+                        type: string
+                  example:
+                    status: false
+                    message: 'Unable to send invite. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    errors:
+                        type: array
+                        items:
+                            message:
+                                type: string
+                  example:
+                    status: boolean
+                    errors:
+                        - message: 'Missing/Invalid parameter. contact must be present and must be a string.'
+    /invite/accept:
+      post:
+        summary: For verifying and accepting an invite. This is the first phase of sign up
+        tags: [Invite]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                  code:
+                    type: string  
+                example:
+                  contact: 'example@email.com'   
+                  code: 'SF9859WHF' 
+        responses:
+          "200":
+            description: Invite accepted
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                    example:
+                      status: true    
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    message:
+                        type: string
+                  example:
+                    status: false
+                    message: 'Unable to accept invite now. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    errors:
+                        type: array
+                        items:
+                            message:
+                                type: string
+                  example:
+                    status: false
+                    errors:
+                        - message: 'Missing/Invalid parameter. contact must be present and must be a string.'                    
+    /invite/:code:  
+      delete:
+        summary: Delete invite
+        tags: [Invite]
+        parameters:
+         - in: path
+           code:
+           schema:
+               type: string
+           required: true
+        responses:
+          "200":
+            description: Delete results
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/Invite'
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    message:
+                        type: string
+                  example:
+                    status: false
+                    message: 'Unable to delete invite at the momemt. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: string
+                    errors:
+                        type: array
+                        items:
+                            message:
+                                type: string
+                  example:
+                    status: 'error'
+                    errors:
+                        - message: 'Missing/Invalid parameter. code must be present and must be a string.'                                     
+    
