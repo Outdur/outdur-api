@@ -1,0 +1,202 @@
+path:
+    /invite/send:
+      post:
+        summary: Send invite
+        description: 'Invite can be one of any three scenarios: Invite to the app, Invite to an event, Invite to a circle'
+        tags: [Invite]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                  event_id:
+                    type: string
+                  circle_id:
+                    type: string  
+                required:
+                  - contact    
+                example:
+                  contact: 
+                    - 'example@email.com'    
+                  event_id: 1UFDHF-U989D-FHKJK3-33JJS  
+                  circle_id: FIRUI-VE8498-4UVFJ-FN4JHK  
+        responses:
+          "201":
+            description: Send invite to phone or email
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    properties:
+                      status:
+                        type: boolean
+                    example:
+                      status: true    
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 500
+                      message: 'Unable to send invite. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                        properties:
+                            code:
+                                type: string
+                            message:
+                                type: string
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. contact must be present and must be a string.'
+    /invite/accept:
+      post:
+        summary: For verifying and accepting an invite. This is the first phase of sign up
+        tags: [Invite]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  contact:
+                    type: string
+                  code:
+                    type: string  
+                example:
+                  contact: 'example@email.com'   
+                  code: 'SF9859WHF' 
+        responses:
+          "200":
+            description: Invite accepted
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    data:
+                      type: object
+                  example:
+                    status: true
+                    data:
+                      user_id: ITDFD-4I5OT-DFJ4R-4JFI4 
+                      circle:
+                        circl_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        name: 'Sports Club'
+                        type: 'Registered'  
+                        members: 44
+                      event:
+                        event_id: 194RU-DJGDO-48GJI-038UJ
+                        title: Weekend Road walk 
+                        description: This event is an activity   
+                        event_type: user event
+                        lcoation: 109 Shalaba Avenue  
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 500
+                      message: 'Unable to accept invite now. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: string
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. contact must be present and must be a string.'                    
+    /invite/:code:  
+      delete:
+        summary: Delete invite
+        tags: [Invite]
+        parameters:
+         - in: path
+           code:
+           schema:
+               type: string
+           required: true
+        responses:
+          "200":
+            description: Delete results
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/Invite'
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Unable to delete invite at the momemt. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: oject
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. code must be present and must be a string.'                                     
+    

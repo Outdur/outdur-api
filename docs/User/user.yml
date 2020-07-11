@@ -1,0 +1,140 @@
+path:
+  /user:
+    post:
+      summary: Create a new user
+      tags: [User]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                phone:
+                  type: string
+      responses:
+        "201":
+          description: New user created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: object
+                example:
+                  status: true
+                  data:
+                    user_id: ITDFD-4I5OT-DFJ4R-4JFI4    
+        "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 500
+                      message: 'Unable to create a new user now. Please try again later.'       
+        "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: string
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. email or phone must be present and must be a string.'  
+    get:
+      summary: Fetch all users
+      tags: [User]      
+      responses:
+        "200":
+          description: Users fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: array
+                example:
+                  status: true
+                  data:
+                    - user_id: HGU6T-9UGGY-GIHGF-YT65R
+                      firstname: Chibuzo
+                      lastname: Okeke
+                      email: outdur@example.com 
+                      phone: 09010000000   
+                      status: Pending
+  /user/:id:
+    get:
+      summary: Find user and return details
+      tags: [User]
+      parameters:
+        - in: path
+          id:
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+    put:
+      summary: Update user information
+      tags: [User]     
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                firstname:
+                  type: string
+                lastname:
+                  type: string
+                email:
+                  type: string 
+                phone: 
+                  type: string   
+                status: 
+                  type: string             
+      responses:
+        "200":
+          description: User updated
+          content:
+            application/json:
+              schema:
+                example:
+                  status: true
+                  data:
+                    user_id: HGU6T-9UGGY-GIHGF-YT65R
+                    firstname: Chibuzo
+                    lastname: Okeke
+                    email: outdur@example.com 
+                    phone: 09010000000   
+                    status: Pending        

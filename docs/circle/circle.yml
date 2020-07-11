@@ -1,0 +1,383 @@
+path:
+    /circles:
+      post:
+        summary: Create circle
+        description: 'A circle can be a registered organisation or just a user created group that only exist within the service'
+        tags: [Circle]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                      type: string
+                  description:
+                      type: string
+                example:
+                  name: My Estate Neighbours
+                  description: These are my estate neighbours
+        responses:
+          "201":
+            description: Circle created
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/CircleResponse'
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 500
+                      message: 'Unable to create circle. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                        properties:
+                            code:
+                                type: string
+                            message:
+                                type: string
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter'
+      get:
+        summary: Fetch user circles
+        description: This endpoint when called by admin, would fetch registered circles
+        tags: [Circle]      
+        responses:
+          "200":
+            description: Circles fetched
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    data:
+                      type: array
+                  example:
+                    status: true
+                    data:
+                      - name: 'Sports Club'
+                        type: 'Registered'
+                        description: 'This circle is goos circle'
+                        members: 13
+                        circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+    /circles/:id:
+      get:
+        summary: Find circle and return details
+        tags: [Circle]
+        parameters:
+          - in: path
+            id:
+            schema:
+              type: integer
+            required: true
+        responses:
+          "200":
+            description: cirlce found
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/CircleResponse'               
+      put:
+        summary: Update circle data
+        tags: [Circle]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                      type: string
+                  description:
+                      type: string
+                example:
+                  name: My Estate Neighbours
+                  description: These are my estate neighbours
+        responses:
+          "200":
+            description: Circle updated
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/CircleResponse'    
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 500
+                      message: 'Unable to update circle now. Please try again later.'
+          "422":
+            description: Request can not be processed
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: string
+                  example:
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter.'                    
+      delete:
+        summary: Delete circle
+        tags: [Circle]
+        parameters:
+         - in: path
+           id:
+           schema:
+               type: string
+           required: true
+        responses:
+          "200":
+            description: Circle deleted
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/CircleResponse'
+          "500":
+            description: Server Error
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status:
+                        type: boolean
+                    error:
+                        type: object
+                  example:
+                    status: false
+                    error:
+                      code: 400
+    /circles/:id/events:
+      get:
+        summary: Fetch circle events
+        tags: [Circle Event]                
+        parameters:
+          - in: path
+            id:
+            schema:
+              type: integer
+            required: true
+        responses:
+          "200":
+            description: cirlce events fetched
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status: 
+                      type: boolean
+                    data:
+                      type: array
+                      example:
+                        - event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                          title: Weekend Road walk 
+                          description: This event is an activity   
+                          event_type: circle-event
+                          location: 109 Shalaba Avenue
+                          circle: 17
+                          event_tags: 'sports, gym, challenge'
+                          event_date: 23/08/2020              
+      post:          
+        summary: Create circle event
+        tags: [Circle Event]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        responses:
+          "201":
+            description: Circle created
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/EventResponse'
+      delete:
+        summary: Delete circle event
+        tags: [Circle Event]
+        parameters:
+         - in: path
+           id:
+           schema:
+               type: integer
+           required: true
+        responses:
+          "200":
+            description: Circle event deleted
+            content:
+              application/json:
+                  schema:
+                    $ref: '#/components/schemas/EventResponse'        
+
+    /circles/:id/discussion:
+      get:
+        summary: Fetch circle events
+        tags: [Circle Discussion]                
+        parameters:
+          - in: path
+            id:
+            schema:
+              type: integer
+            required: true
+        responses:
+          "200":
+            description: cirlce discussion fetched
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    status: 
+                      type: boolean
+                    data:
+                      type: array
+                      example:
+                        - message: Somehow, I missed the last hangout
+                          datetime: 15/07/2020 12:00
+                          user:
+                            name: Emeka Onah
+                            id: HGU6T-9UGGY-GIHGF-YT65R 
+                            photo: img-url          
+      post:          
+        summary: Post message to circle discussion
+        tags: [Circle Discussion]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  circle_id:
+                    type: integer
+                  message:
+                    type: string
+                  replyTo: 
+                    type: integer
+                example:  
+                  circle_id: FIRUI-VE8498-4UVFJ-FN4JHK    
+                  message: Who hasn't paid for their t-shirt yet?
+                  replyTo: 43 
+        responses:
+          "201":
+            description: Message posted
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    properties:
+                    example:
+                      status: true
+                      data:
+                        circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        message: Who hasn't paid for their t-shirt yet?
+                        replyTo:
+                          message: 'A message that needs reply'
+                          message_id: 39
+                        datetime: 09/07/2020 15:27  
+
+    /circles/:id/members:
+      get:                    
+        summary: Fetch circle members
+        tags: [Circle Membership]                
+        parameters:
+          - in: path
+            id:
+            schema:
+              type: string
+            required: true
+        responses:
+          "200":
+            description: cirlce member list fetched
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                  example:
+                    status: true
+                    data:
+                      - name: Emeka Onah
+                        photo: photo-url
+                        id: HGU6T-9UGGY-GIHGF-YT65R
+    /circles/:id/members/ban:                    
+      post:
+        summary: Ban circle member
+        tags: [Circle Membership]
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  circle_id:
+                    type: integer 
+                example:
+                  circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                  user_id: HGU6T-9UGGY-GIHGF-YT65R 
+                  reason: Bigot          
+        responses:
+          "200":
+            description: Member banned from circle
+            content:
+              application/json:
+                  schema:
+                    type: object
+                    properties:
+                    example:
+                      status: true
+                      data:
+                        circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        user_id: HGU6T-9UGGY-GIHGF-YT65R                    
+
+

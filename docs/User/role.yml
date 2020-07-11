@@ -1,0 +1,12 @@
+components:
+     schemas:
+       Role:
+         type: object
+         properties:
+           id:
+               type: integer
+           role:
+               type: string
+         example:
+              id: 1
+              role: admin

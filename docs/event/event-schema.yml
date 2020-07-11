@@ -1,0 +1,54 @@
+components:
+  schemas:
+    Event:
+      type: object
+      properties:
+        id:
+            type: integer
+        title:
+            type: string
+            required: true
+        description:
+            type: string
+            required: true
+        event_type:
+            type: string
+            enum:
+            - "user-event"
+            - "circle-event"   
+            - "league" 
+        location:
+            type: string
+        user:
+            type: integer  
+        circle:
+            type: integer         
+        event_tags:
+            type: string     
+        event_date:
+            type: date       
+      example:
+          title: Weekend Road walk 
+          description: This event is an activity   
+          event_type: circle-event
+          location: 109 Shalaba Avenue
+          circle: 17
+          event_tags: 'sports, gym, challenge'
+          event_date: 23/08/2020
+    EventResponse:
+      type: object
+      properties:
+        status:
+          type: boolean
+        data:
+          type: object
+          example:
+            event_id: 1UFDHF-U989D-FHKJK3-33JJS
+            title: Weekend Road walk 
+            description: This event is an activity   
+            event_type: circle-event
+            location: 109 Shalaba Avenue
+            circle: 17
+            event_tags: 'sports, gym, challenge'
+            event_date: 23/08/2020
+      

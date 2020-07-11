@@ -1,0 +1,30 @@
+components:
+     schemas:
+       Invite:
+         type: object
+         properties:
+           id:
+               type: integer
+           email:
+               type: string
+           phone:
+               type: string
+           code:
+               type: integer
+           user:
+                type: integer  
+           event_id:
+                type: string     
+           circle_id:
+                type: string    
+           status:
+                type: string       
+         example:
+              id: 1
+              email: outdur@example.com 
+              phone: 09010000000   
+              code: AX0R1FH5H
+              user: 32
+              event_id: 1UFDHF-U989D-FHKJK3-33JJS
+              circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+              status: Pending
