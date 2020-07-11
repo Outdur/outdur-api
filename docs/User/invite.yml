@@ -2,6 +2,7 @@ path:
     /invite/send:
       post:
         summary: Send invite
+        description: 'Invite can be one of any three scenarios: Invite to the app, Invite to an event, Invite to a circle'
         tags: [Invite]
         requestBody:
           required: true
@@ -12,9 +13,17 @@ path:
                 properties:
                   contact:
                     type: string
+                  event_id:
+                    type: string
+                  circle_id:
+                    type: string  
+                required:
+                  - contact    
                 example:
                   contact: 
                     - 'example@email.com'    
+                  event_id: 1UFDHF-U989D-FHKJK3-33JJS  
+                  circle_id: FIRUI-VE8498-4UVFJ-FN4JHK  
         responses:
           "201":
             description: Send invite to phone or email
@@ -36,11 +45,13 @@ path:
                   properties:
                     status:
                         type: boolean
-                    message:
-                        type: string
+                    error:
+                        type: object
                   example:
                     status: false
-                    message: 'Unable to send invite. Please try again later.'
+                    error:
+                      code: 500
+                      message: 'Unable to send invite. Please try again later.'
           "422":
             description: Request can not be processed
             content:
@@ -50,15 +61,18 @@ path:
                   properties:
                     status:
                         type: boolean
-                    errors:
-                        type: array
-                        items:
+                    error:
+                        type: object
+                        properties:
+                            code:
+                                type: string
                             message:
                                 type: string
                   example:
-                    status: boolean
-                    errors:
-                        - message: 'Missing/Invalid parameter. contact must be present and must be a string.'
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. contact must be present and must be a string.'
     /invite/accept:
       post:
         summary: For verifying and accepting an invite. This is the first phase of sign up
@@ -82,13 +96,28 @@ path:
             description: Invite accepted
             content:
               application/json:
-                  schema:
-                    type: object
-                    properties:
-                      status:
-                        type: boolean
-                    example:
-                      status: true    
+                schema:
+                  type: object
+                  properties:
+                    status:
+                      type: boolean
+                    data:
+                      type: object
+                  example:
+                    status: true
+                    data:
+                      user_id: ITDFD-4I5OT-DFJ4R-4JFI4 
+                      circle:
+                        circl_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        name: 'Sports Club'
+                        type: 'Registered'  
+                        members: 44
+                      event:
+                        event_id: 194RU-DJGDO-48GJI-038UJ
+                        title: Weekend Road walk 
+                        description: This event is an activity   
+                        event_type: user event
+                        lcoation: 109 Shalaba Avenue  
           "500":
             description: Server Error
             content:
@@ -98,11 +127,13 @@ path:
                   properties:
                     status:
                         type: boolean
-                    message:
-                        type: string
+                    error:
+                        type: object
                   example:
                     status: false
-                    message: 'Unable to accept invite now. Please try again later.'
+                    error:
+                      code: 500
+                      message: 'Unable to accept invite now. Please try again later.'
           "422":
             description: Request can not be processed
             content:
@@ -112,15 +143,13 @@ path:
                   properties:
                     status:
                         type: boolean
-                    errors:
-                        type: array
-                        items:
-                            message:
-                                type: string
+                    error:
+                        type: string
                   example:
                     status: false
-                    errors:
-                        - message: 'Missing/Invalid parameter. contact must be present and must be a string.'                    
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. contact must be present and must be a string.'                    
     /invite/:code:  
       delete:
         summary: Delete invite
@@ -147,11 +176,13 @@ path:
                   properties:
                     status:
                         type: boolean
-                    message:
-                        type: string
+                    error:
+                        type: object
                   example:
                     status: false
-                    message: 'Unable to delete invite at the momemt. Please try again later.'
+                    error:
+                      code: 400
+                      message: 'Unable to delete invite at the momemt. Please try again later.'
           "422":
             description: Request can not be processed
             content:
@@ -160,14 +191,12 @@ path:
                   type: object
                   properties:
                     status:
-                        type: string
-                    errors:
-                        type: array
-                        items:
-                            message:
-                                type: string
+                        type: boolean
+                    error:
+                        type: oject
                   example:
-                    status: 'error'
-                    errors:
-                        - message: 'Missing/Invalid parameter. code must be present and must be a string.'                                     
+                    status: false
+                    error:
+                      code: 400
+                      message: 'Missing/Invalid parameter. code must be present and must be a string.'                                     
     

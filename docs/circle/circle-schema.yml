@@ -1,0 +1,55 @@
+components:
+  schemas:
+    Circle:
+      type: object
+      properties:
+        id:
+            type: integer
+        name:
+            type: string
+        type:
+            type: string
+        description:
+            type: string    
+        user:
+            type: object
+            properties:
+              id:
+                  type: integer
+              user_id:
+                  type: string    
+              firstname:
+                  type: string    
+              lastname:
+                  type: string        
+              email:
+                  type: string
+              phone:
+                  type: string
+              status:
+                    type: string           
+      example:
+          id: 1
+          name: 'Sports Club'
+          type: 'Registered'
+          description: 'This circle is goos circle'
+          user:
+            $ref: '#/components/schemas/User'
+    CircleResponse:         
+      type: object
+      properties:
+        status: 
+          type: boolean
+        data:
+          type: object
+          properties:
+            circle_id:
+              type: string
+            name:
+              type: string
+            type:
+              type: string
+            description:
+              type: string  
+            members:
+              type: integer     
