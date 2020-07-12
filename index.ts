@@ -1,4 +1,3 @@
-//import * as dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import helmet from "helmet";
@@ -17,7 +16,7 @@ if (!process.env.PORT) {
 
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
-const app = express();
+ const app = express();
 
 app.use(helmet());
 app.use(cors());
@@ -25,7 +24,7 @@ app.use(express.json());
 
 app.use('/', express.Router().get("/", (req, res) => res.status(200).json({ message: "Hello, welcome to Outdur API, haha!" })));
 app.use('/api/docs', api_doc);
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
@@ -34,11 +33,13 @@ const server = app.listen(PORT, () => {
     console.log(`Listening on port ${PORT}`);
 });
 
+module.exports = server;
 
 // Webpack HMR activation
 type ModuleId = string | number;
 
 interface WebpackHotModule {
+    exports: import("http").Server;
     hot?: {
         data: any;
         accept(
