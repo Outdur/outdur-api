@@ -2,15 +2,13 @@ import express, { Request, Response } from "express";
 import { IUser } from "./userInterface";
 import { IUsers } from "./usersInterface";
 const userService = require("./userService");
+const { userValidationRules, validate } = require('../middleware/userValidation');
 
 export const userRouter = express.Router();
 
-// create user
-userRouter.post('/', async (req: Request, res: Response) => {
-    const newUser = await userService.create({});
-    res.status(201).json(newUser);
+userRouter.post('/', userValidationRules(), validate, async (req: Request, res: Response) => {
+    res.status(201);
 });
-
 
 // find one user
 userRouter.get('/:id', async (req: Request, res: Response) => {
