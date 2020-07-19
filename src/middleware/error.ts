@@ -1,5 +1,6 @@
 import HttpException from "../common/http-exception";
 import { Request, Response, NextFunction } from "express";
+const httpResponse = require("../helpers/httpResponse");
 
 export const errorHandler = (
     error: HttpException,
@@ -11,5 +12,5 @@ export const errorHandler = (
     const message =
         error.message || "Opp!. Something went south.";
 
-    response.status(status).send(message);
+    httpResponse.send(response, status, message)
 };

@@ -11,4 +11,4 @@ const userSchema = new Schema({
     phone: String
 }, { timestamps: true });
 
-exports.userModel = mongoose.model('User', userSchema);
+exports.userModel = mongoose.model('User', userSchema); 
