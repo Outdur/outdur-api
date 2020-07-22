@@ -14,8 +14,6 @@ if (!process.env.PORT) {
     process.exit(1);
 }
 
-//errorHandler({ message: 'error' }, req)
-
 const PORT: number = parseInt(process.env.PORT as string, 10);
 
  const app = express();

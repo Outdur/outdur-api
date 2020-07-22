@@ -1,13 +1,21 @@
 import { IUser } from "./userInterface";
 import { IUsers } from "./usersInterface";
 import { isEmail, isLength, isNumeric } from "../helpers/validator";
+import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
 
 
-const create = async (newUser: any): Promise<IUser | object> => {
-    const validationError = validateUser(newUser);
+const create = async (userData: any) => {
+    const validationError = validateUser(userData);
     if (validationError) throw new handleError(422, validationError);
-    return newUser;
+
+    const userContact = isNumeric(userData.contact) ? { phone: userData.contact } : { email: userData.contact };
+    try {
+        return await userModel.create(userContact);
+    } catch (err) {
+        let message = err.code == '11000' ? 'Duplicate contact' : 'Unknown fatal error occurred';
+        throw new handleError(500, message);
+    }
 }
 
 const findOne = async (id: number): Promise<IUser | any> => {
@@ -16,7 +24,13 @@ const findOne = async (id: number): Promise<IUser | any> => {
 }
 
 const findAll = async (): Promise<IUsers | any[]> => {
-    const users: any[] | IUsers | PromiseLike<any[] | IUsers> = [];
+    await userModel.remove({})
+    let users: any[] | IUsers | PromiseLike<any[] | IUsers> = [];
+    try {
+        users = await userModel.find();
+    } catch(err) {
+        console.log(err)
+    }
     return users;
 }
 

@@ -1,26 +1,28 @@
-export const isEmail = (value: string) => {
+export const isEmail = (value: string): boolean => {
     const reg = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return reg.test(value);
 };
 
-export const isLength = (value: any, option: any) => {
+export const isLength = (value: any, option: any): boolean => {
     const opts = Object.keys(option);
     let response;
     for (let i = 0; i < opts.length; i++) {
         if (!['is', 'min', 'max'].includes(opts[i])) {
-            response = "Invalid option key. Valid keys are (is, min and max)";
-            break;
+            throw new Error('Invalid option key. Valid keys are (is, min and max)');
         }
         if (opts[i] === 'is') {
-            response = value === option[opts[i]];
+            response = value.length === option[opts[i]];
             break;
         }
-        if (opts[i] === 'min') response = value >= option[opts[i]];
-        if (opts[i] === 'max') response = value <= option[opts[i]];
+        if (opts[i] === 'min') {
+            response = !(value.length < option[opts[i]]);
+            if (!response) break;
+        }
+        if (opts[i] === 'max') response = !(value.length > option[opts[i]]);
     }
-    return response === true ? null : response;
+    return response === true;
 };
 
-export const isNumeric = (value: string|number) => {
+export const isNumeric = (value: string|number): boolean => {
     return !isNaN(Number(value));
 }

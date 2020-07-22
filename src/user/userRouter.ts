@@ -27,8 +27,12 @@ userRouter.get('/:id', async (req: Request, res: Response) => {
 
 // find many users
 userRouter.get('/', async (req: Request, res: Response) => {
-    const users = await userService.findAll();
-    res.status(200).send(users);
+    try {
+        const users = await userService.findAll();
+        httpResponse.send(res, 200, '', users);
+    } catch(err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
 });
 
 
