@@ -17,10 +17,10 @@ userRouter.post('/', async (req: Request, res: Response) => {
 // find one user
 userRouter.get('/:id', async (req: Request, res: Response) => {
     try {
-        const user = await userService.findOne(1);
-        res.status(200).json(user);
-    } catch(err) {
-
+        const user = await userService.findOne(req.params.id);
+        httpResponse.send(res, 200, 'User found', user)
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
     }
 });
 
@@ -29,7 +29,7 @@ userRouter.get('/:id', async (req: Request, res: Response) => {
 userRouter.get('/', async (req: Request, res: Response) => {
     try {
         const users = await userService.findAll();
-        httpResponse.send(res, 200, '', users);
+        httpResponse.send(res, 200, 'Users found', users);
     } catch(err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
@@ -37,9 +37,12 @@ userRouter.get('/', async (req: Request, res: Response) => {
 
 
 // update user
-userRouter.put('/:id', async (req: Request, res, Response) => {
-    const user = await userService.update(1);
-    res.status(200).send(user);
+userRouter.put('/:id', async (req: Request, res: Response) => {
+    try {
+        req.body.user_id = req.params.id;
+        const user = await userService.update(req.body);
+        httpResponse.send(res, 200, 'User updated', user);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
 });
-
-//export { userRouter };

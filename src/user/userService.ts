@@ -6,7 +6,7 @@ import { handleError } from "../helpers/handleError";
 
 
 const create = async (userData: any) => {
-    const validationError = validateUser(userData);
+    const validationError = validateNewUser(userData);
     if (validationError) throw new handleError(422, validationError);
 
     const userContact = isNumeric(userData.contact) ? { phone: userData.contact } : { email: userData.contact };
@@ -18,34 +18,39 @@ const create = async (userData: any) => {
     }
 }
 
-const findOne = async (id: number): Promise<IUser | any> => {
-    const user = { _id: 'findone' };
-    return user;
+const findOne = async (user_id: number): Promise<IUser | any> => {
+    return await userModel.findOne({ user_id });
 }
 
 const findAll = async (): Promise<IUsers | any[]> => {
-    await userModel.remove({})
-    let users: any[] | IUsers | PromiseLike<any[] | IUsers> = [];
-    try {
-        users = await userModel.find();
-    } catch(err) {
-        console.log(err)
-    }
-    return users;
+    return await userModel.find();
 }
 
-const update = async (id: number): Promise<IUser | any> => {
-    let user = { _id: 'update' };
-    return user;
+const update = async (userData: IUser): Promise<IUser | any> => {
+    const validationError = validateUpdateUser(userData);
+    if (validationError) throw new handleError(422, validationError);
+    
+    const user_id = userData.user_id;
+    delete userData.user_id;
+    const updatedUser = await userModel.findOneAndUpdate({ user_id }, userData, { new: true });
+    return updatedUser;
 }
 
-const validateUser = (user: any): null | string => {
+const validateNewUser = (user: any): null | string => {
     if (!user.contact) return 'Contact field must not be empty';
     if (isNumeric(user.contact)) {
         if (!isLength(user.contact, { min: 6, max: 15 })) return 'Contact phone must not be less than 6 or greater than 15 numbers';
     } else {
         if (!isEmail(user.contact)) return 'Contact email is invalid';
     }
+    return null;
+}
+
+const validateUpdateUser = (user: any): null | string => {
+    if (user.phone && isNumeric(user.phone)) {
+        if (!isLength(user.phone, { min: 6, max: 15 })) return 'Phone must not be less than 6 or greater than 15 numbers';
+    } else if (user.phone && !isNumeric(user.phone)) return 'Phone must be numeric';
+    if (user.email && !isEmail(user.phone)) return 'Contact email is invalid';
     return null;
 }
 
