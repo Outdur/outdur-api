@@ -19,7 +19,9 @@ const create = async (userData: any) => {
 }
 
 const findOne = async (user_id: number): Promise<IUser | any> => {
-    return await userModel.findOne({ user_id });
+    const user =  await userModel.findOne({ user_id });
+    if (!user) throw new handleError(404, 'User not found');
+    return user;
 }
 
 const findAll = async (): Promise<IUsers | any[]> => {
@@ -47,6 +49,14 @@ const validateNewUser = (user: any): null | string => {
 }
 
 const validateUpdateUser = (user: any): null | string => {
+    try {
+        Object.keys(user).forEach(key => {
+            if (!['email', 'phone', 'firstname', 'lastname', 'user_id'].includes(key)) throw new Error(`The field ${key} is not allowed`);
+        });
+    } catch (err) {
+        return err.message;
+    }
+    
     if (user.phone && isNumeric(user.phone)) {
         if (!isLength(user.phone, { min: 6, max: 15 })) return 'Phone must not be less than 6 or greater than 15 numbers';
     } else if (user.phone && !isNumeric(user.phone)) return 'Phone must be numeric';
