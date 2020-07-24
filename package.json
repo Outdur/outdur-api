@@ -14,6 +14,7 @@
   "dependencies": {
     "@types/express-serve-static-core": "^4.17.8",
     "@types/mongoose": "^5.7.31",
+    "chai-as-promised": "^7.1.1",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
@@ -21,10 +22,12 @@
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.23",
     "swagger-jsdoc": "^4.0.0",
-    "swagger-ui-express": "^4.1.4"
+    "swagger-ui-express": "^4.1.4",
+    "uuid-mongodb": "^2.3.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.11",
+    "@types/chai-as-promised": "^7.1.3",
     "@types/chai-http": "^4.2.0",
     "@types/cors": "^2.8.6",
     "@types/dotenv": "^8.2.0",
