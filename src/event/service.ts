@@ -33,17 +33,21 @@ const update = async (event: IEvent): Promise<IEvent> => {
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
-    if (!event.title) return 'Event must have a title';
-    if (!event.description) return 'Event must have a description';
-    if (!event.venue) return 'Event must have a venue';
-    if (!event.event_date) return 'Event must have a date';
-    
     if (event.event_id) {
         if (!await eventModel.findOne({ event_id: event.event_id })) throw new handleError(404, 'Event not found');
+
+        if (event.title !== undefined && !event.title) return 'Event title cannot be empty';
+        if (event.description !== undefined && !event.description) return 'Event description cannot be empty';
+        if (event.venue !== undefined && !event.venue) return 'Event must have a venue';
+        if (event.event_date !== undefined && !event.event_date) return 'Event must have a date';
         
         // we don't want any of these to be edited
         (['user_id', 'circle_id', 'event_id'] as const).forEach(key => { delete event[key]; });
     } else {
+        if (!event.title) return 'Event must have a title';
+        if (!event.description) return 'Event must have a description';
+        if (!event.venue) return 'Event must have a venue';
+        if (!event.event_date) return 'Event must have a date';
         if (!event.user_id && !event.circle_id) return 'Event must have a user_id or circle_id';
         if (event.user_id && event.circle_id) return 'Event cannot have both user_id and circle_id. Only one of them can be set';
         if (event.user_id) if (!await userModel.findOne({ user_id: event.user_id })) return 'Invalid user_id';
