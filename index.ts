@@ -7,6 +7,7 @@ import { errorHandler } from "./src/middleware/error";
 import { notFoundHandler } from "./src/middleware/notFound";
 import { routes as api_doc } from "./docs";
 import { userRouter } from "./src/user/userRouter";
+import { eventRouter } from "./src/event/router";
 
 require('dotenv').config();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 app.use('/', express.Router().get("/", (req, res) => res.status(200).json({ message: "Hello, welcome to Outdur API, haha!" })));
 app.use('/api/docs', api_doc);
 app.use('/users', userRouter);
+app.use('/events', eventRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
