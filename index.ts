@@ -8,6 +8,7 @@ import { notFoundHandler } from "./src/middleware/notFound";
 import { routes as api_doc } from "./docs";
 import { userRouter } from "./src/user/userRouter";
 import { eventRouter } from "./src/event/router";
+import { circleRouter } from "./src/circle/router";
 
 require('dotenv').config();
 
@@ -27,6 +28,7 @@ app.use('/', express.Router().get("/", (req, res) => res.status(200).json({ mess
 app.use('/api/docs', api_doc);
 app.use('/users', userRouter);
 app.use('/events', eventRouter);
+app.use('/circles', circleRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
