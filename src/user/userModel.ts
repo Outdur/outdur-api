@@ -18,7 +18,8 @@ const userSchema = new Schema({
             unique: true,
             partialFilterExpression: { phone: { $type: "string" } }
         }
-    }
+    },
+    photo_url: String
 }, { timestamps: true });
 
 export const userModel = mongoose.model('User', userSchema); 
