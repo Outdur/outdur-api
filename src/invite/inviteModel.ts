@@ -1,10 +1,9 @@
 const MUUID = require('uuid-mongodb');
-//const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
 const inviteSchema = new Schema({
-    id: { type: String, default: MUUID.v4() },
     email: {
         type: String, trim: true, index: {
             unique: true,
@@ -24,4 +23,4 @@ const inviteSchema = new Schema({
     status: String
 }, { timestamps: true });
 
-exports.inviteModel = mongoose.model('Invite', inviteSchema);
+export const inviteModel = mongoose.model('Invite', inviteSchema); 
