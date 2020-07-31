@@ -12,7 +12,6 @@ const create = async (inviteData: any) => {
 
     const code: string = generateCode();
     inviteData.code = code;
-    // inviteData.user = user;
     const userContact = isNumeric(inviteData.contact) ? { phone: inviteData.contact } : { email: inviteData.contact };
     let circle_id, event_id;
 
@@ -24,7 +23,7 @@ const create = async (inviteData: any) => {
     const invitePayload: any = [code, userContact, circle_id, event_id, user];
     
     try {
-        // return await inviteModel.create(invitePayload);
+        return await inviteModel.create(invitePayload); //this crashes the app :(
     } catch (err) {
         let message = err.code == '11000' ? 'Duplicate contact' : 'Unknown fatal error occurred';
         throw new handleError(500, message);
