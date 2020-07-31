@@ -9,7 +9,7 @@ import { routes as api_doc } from "./docs";
 import { userRouter } from "./src/user/userRouter";
 import { eventRouter } from "./src/event/router";
 import { circleRouter } from "./src/circle/router";
-import { inviteRouter } from "./src/invite/inviteRouter";
+import { inviteRouter } from "./src/invite/router";
 
 require('dotenv').config();
 

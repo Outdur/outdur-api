@@ -16,10 +16,25 @@ const inviteSchema = new Schema({
             partialFilterExpression: { phone: { $type: "string" } }
         }
     },
-    code: Number,
-    user: Number,
-    event_id: String,
-    circle_id: String,
+    user: {
+        type: String, trim: true, index: {
+            unique: true,
+            partialFilterExpression: { phone: { $type: "string" } }
+        }
+    },
+    event_id: {
+        type: String, trim: true, index: {
+            unique: true,
+            partialFilterExpression: { phone: { $type: "string" } }
+        }
+    },
+    circle_id: {
+        type: String, trim: true, index: {
+            unique: true,
+            partialFilterExpression: { phone: { $type: "string" } }
+        }
+    },
+    code: String,
     status: String
 }, { timestamps: true });
 
