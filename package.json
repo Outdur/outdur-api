@@ -22,6 +22,7 @@
     "helmet": "^3.22.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.9.23",
+    "sharp": "^0.25.4",
     "swagger-jsdoc": "^4.0.0",
     "swagger-ui-express": "^4.1.4",
     "uuid-mongodb": "^2.3.0"
@@ -36,6 +37,7 @@
     "@types/helmet": "0.0.45",
     "@types/mocha": "^7.0.2",
     "@types/node": "^14.0.22",
+    "@types/sharp": "^0.25.1",
     "chai": "^4.2.0",
     "chai-http": "^4.3.0",
     "mocha": "^8.0.1",

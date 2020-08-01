@@ -9,6 +9,7 @@ import { routes as api_doc } from "./docs";
 import { userRouter } from "./src/user/userRouter";
 import { eventRouter } from "./src/event/router";
 import { circleRouter } from "./src/circle/router";
+import { imgServiceRouter } from "./src/helpers/imageHelper";
 
 require('dotenv').config();
 
@@ -29,6 +30,7 @@ app.use('/api/docs', api_doc);
 app.use('/users', userRouter);
 app.use('/events', eventRouter);
 app.use('/circles', circleRouter);
+app.use('/media', imgServiceRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
