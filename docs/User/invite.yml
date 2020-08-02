@@ -117,7 +117,7 @@ path:
                         title: Weekend Road walk 
                         description: This event is an activity   
                         event_type: user event
-                        lcoation: 109 Shalaba Avenue  
+                        venue: 109 Shalaba Avenue  
           "500":
             description: Server Error
             content:

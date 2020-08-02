@@ -1,67 +1,5 @@
 path:
-  /user:
-    post:
-      summary: Create a new user
-      tags: [User]
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                phone:
-                  type: string
-      responses:
-        "201":
-          description: New user created
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: boolean
-                  data:
-                    type: object
-                example:
-                  status: true
-                  data:
-                    user_id: ITDFD-4I5OT-DFJ4R-4JFI4    
-        "500":
-            description: Server Error
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    status:
-                        type: boolean
-                    error:
-                        type: object
-                  example:
-                    status: false
-                    error:
-                      code: 500
-                      message: 'Unable to create a new user now. Please try again later.'       
-        "422":
-            description: Request can not be processed
-            content:
-              application/json:
-                schema:
-                  type: object
-                  properties:
-                    status:
-                        type: boolean
-                    error:
-                        type: string
-                  example:
-                    status: false
-                    error:
-                      code: 400
-                      message: 'Missing/Invalid parameter. email or phone must be present and must be a string.'  
+  /users:
     get:
       summary: Fetch all users
       tags: [User]      
@@ -86,7 +24,7 @@ path:
                       email: outdur@example.com 
                       phone: 09010000000   
                       status: Pending
-  /user/:id:
+  /users/:id:
     get:
       summary: Find user and return details
       tags: [User]
@@ -121,6 +59,8 @@ path:
                   type: string 
                 phone: 
                   type: string   
+                photo_url:
+                  type: string  
                 status: 
                   type: string             
       responses:
@@ -136,5 +76,6 @@ path:
                     firstname: Chibuzo
                     lastname: Okeke
                     email: outdur@example.com 
-                    phone: 09010000000   
+                    phone: 09010000000  
+                    photo_url: https://photo-url 
                     status: Pending        

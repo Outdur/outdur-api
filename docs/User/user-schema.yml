@@ -15,6 +15,8 @@ components:
                type: string
            phone:
                type: string
+           photo_url:
+                type: string    
            status:
                 type: string       
          example:
@@ -22,5 +24,6 @@ components:
               firstname: Chibuzo
               lastname: Okeke
               email: outdur@example.com 
-              phone: 09010000000   
+              phone: 09010000000  
+              photo_url: https://photo-url 
               status: Pending
