@@ -6,35 +6,34 @@ const Schema = mongoose.Schema;
 const inviteSchema = new Schema({
     email: {
         type: String, trim: true, index: {
-            unique: true,
             partialFilterExpression: { email: { $type: "string" } }
         }
     },
     phone: {
         type: String, trim: true, index: {
-            unique: true,
             partialFilterExpression: { phone: { $type: "string" } }
         }
     },
     user: {
         type: String, trim: true, index: {
-            unique: true,
-            partialFilterExpression: { phone: { $type: "string" } }
+            partialFilterExpression: { user: { $type: "string" } }
         }
     },
     event_id: {
         type: String, trim: true, index: {
-            unique: true,
-            partialFilterExpression: { phone: { $type: "string" } }
+            partialFilterExpression: { event_id: { $type: "string" } }
         }
     },
     circle_id: {
         type: String, trim: true, index: {
-            unique: true,
-            partialFilterExpression: { phone: { $type: "string" } }
+            partialFilterExpression: { circle_id: { $type: "string" } }
         }
     },
-    code: String,
+    code:  {
+        type: String, trim: true, index: {
+            partialFilterExpression: { circle_id: { $type: "string" } }
+        }
+    },
     status: String
 }, { timestamps: true });
 
