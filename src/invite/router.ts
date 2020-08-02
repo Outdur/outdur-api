@@ -13,3 +13,12 @@ inviteRouter.post('/send', async (req: Request, res: Response) => {
         httpResponse.send(res, err.statusCode, err.message, { invalidContacts: err.data || null });
     }
 });
+
+inviteRouter.get('/', async (req: Request, res: Response) => {
+    try {
+        const invites = await inviteService.find();
+        httpResponse.send(res, 200, null, invites);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});

@@ -4,6 +4,8 @@ import { handleError } from "../helpers/handleError";
 import { generateCode } from "../helpers/utility"
 import { circleModel } from '../circle/model';
 import { eventModel } from '../event/model';
+import { IInvites } from "./interface";
+import { inviteRouter } from "./router";
 
 const create = async (inviteData: any) => {
     const validationResult = await validateInvite(inviteData);
@@ -30,6 +32,11 @@ const create = async (inviteData: any) => {
     await inviteModel.insertMany(invites, { ordered: false });
 
     return invalidContacts || [];
+}
+
+
+const find = async (): Promise<IInvites | null> => {
+    return inviteModel.find();
 }
 
 const validateInvite = async (invite: any): Promise<any> => {
@@ -67,4 +74,5 @@ const validateInvite = async (invite: any): Promise<any> => {
 
 module.exports = {
     create,
+    find
 }
