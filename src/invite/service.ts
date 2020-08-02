@@ -5,7 +5,6 @@ import { generateCode } from "../helpers/utility"
 import { circleModel } from '../circle/model';
 import { eventModel } from '../event/model';
 import { IInvites } from "./interface";
-import { inviteRouter } from "./router";
 
 const create = async (inviteData: any) => {
     const validationResult = await validateInvite(inviteData);
@@ -18,14 +17,14 @@ const create = async (inviteData: any) => {
     }
 
     const invites = validContacts.map((contact: string) => {
-        const key = isNumeric(inviteData.contact) ? 'phone' : 'email';
+        const key = isNumeric(contact) ? 'phone' : 'email';
         const invite = {
             [key]: contact,
             code: generateCode(),
             user: '1'
         };
         if (inviteData.event_id) invite.event_id = inviteData.event_id;
-        if (inviteData.circle_id) invite.cirlce_id = inviteData.circle_id;
+        if (inviteData.circle_id) invite.circle_id = inviteData.circle_id;
         return invite;
     });
     
