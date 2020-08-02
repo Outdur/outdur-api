@@ -10,6 +10,6 @@ inviteRouter.post('/send', async (req: Request, res: Response) => {
         const response = await inviteService.create(req.body);
         httpResponse.send(res, 201, 'Invitation sent', response);
     } catch(err) {
-        httpResponse.send(res, err.statusCode, err.message);
+        httpResponse.send(res, err.statusCode, err.message, { invalidContacts: err.data || null });
     }
 });
