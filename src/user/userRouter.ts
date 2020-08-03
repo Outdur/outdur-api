@@ -1,6 +1,7 @@
 import express, { Request, Response } from "express";
 const userService = require("./userService");
 const httpResponse = require("../helpers/httpResponse");
+const authenticate = require('../middleware/verifyToken');
 
 
 export const userRouter = express.Router();
@@ -28,7 +29,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
 
 
 // update user
-userRouter.put('/:id', async (req: Request, res: Response) => {
+userRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.user_id = req.params.id;
         const user = await userService.update(req.body);

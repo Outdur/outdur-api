@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-const send = (res: Response, statusCode: any, message: string | null, data: object | null) => {
+const send = (res: Response, statusCode: any, message: string | null, data?: object) => {
     let response: any = {
         status: true,
     }
