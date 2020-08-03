@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-const send = (res: Response, statusCode: any, message: string | null, data: object | null) => {
+const send = (res: Response, statusCode: any, message: string | null, data?: object) => {
     let response: any = {
         status: true,
     }
@@ -8,7 +8,7 @@ const send = (res: Response, statusCode: any, message: string | null, data: obje
     if (data) response.data = data
 
     statusCode = statusCode || 500;
-    if (statusCode > 299) response = { ...response, status: false, error: { code: statusCode, message }};
+    if (statusCode > 299) response = { status: false, error: { code: statusCode, message }, ...response };
 
     return res.status(statusCode).json(response);
 }
