@@ -26,7 +26,7 @@ path:
                   circle_id: FIRUI-VE8498-4UVFJ-FN4JHK  
         responses:
           "201":
-            description: Send invite to phone or email
+            description: Send invite to phone or email. For multiple contact invites, if some contacts are invalid, we'll still send invites to valid ones then return the invalid contacts.
             content:
               application/json:
                   schema:
@@ -36,6 +36,10 @@ path:
                         type: boolean
                     example:
                       status: true    
+                      data:
+                        invalidContacts:
+                          - message: 'Contact phone must not be less than 6 or greater than 15 numbers'
+                            contact: 0904
           "500":
             description: Server Error
             content:
