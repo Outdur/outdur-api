@@ -5,6 +5,7 @@ import { generateCode } from "../helpers/utility"
 import { circleModel } from '../circle/model';
 import { eventModel } from '../event/model';
 import { IInvites } from "./interface";
+const userService = require("../user/userService");
 
 const create = async (inviteData: any) => {
     const validationResult = await validateInvite(inviteData);
@@ -31,6 +32,40 @@ const create = async (inviteData: any) => {
     await inviteModel.insertMany(invites, { ordered: false });
 
     return invalidContacts || [];
+}
+
+
+const acceptInvite = async (inviteData: any) => {
+    const { contact, code } = inviteData;
+    const contactKey = isNumeric(contact) ? 'phone' : 'email';
+    const criteria = {
+        [contactKey]: contact,
+        code
+    };
+    const invite = await inviteModel.find(criteria);
+    if (!invite.length) throw new handleError(404, 'Invite not found');
+
+    // create new user
+    const user = await userService.create({ contact });
+
+    const data: any = {};
+
+    if (invite.circle_id && invite.event_id) {
+        data.circle_id = inviteData.circle_id;
+        data.event_id = inviteData.event_id;
+    }
+
+    if (invite.circle_id) {
+        data.circle_id = inviteData.circle_id;
+    }
+
+    if (invite.event_id) {
+        data.event_id = inviteData.event_id;
+    }
+
+    data.token = userService.generateUserToken(user);
+
+    return data;
 }
 
 
@@ -71,7 +106,9 @@ const validateInvite = async (invite: any): Promise<any> => {
     return { validContacts, invalidContacts };
 };
 
+
 module.exports = {
     create,
+    acceptInvite,
     find
 }

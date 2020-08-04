@@ -3,6 +3,7 @@ import { IUsers } from "./usersInterface";
 import { isEmail, isLength, isNumeric } from "../helpers/validator";
 import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
+const jwt = require('jsonwebtoken');
 
 
 const create = async (userData: any) => {
@@ -10,12 +11,12 @@ const create = async (userData: any) => {
     if (validationError) throw new handleError(422, validationError);
 
     const userContact = isNumeric(userData.contact) ? { phone: userData.contact } : { email: userData.contact };
-    try {
-        return await userModel.create(userContact);
-    } catch (err) {
-        let message = err.code == '11000' ? 'Duplicate contact' : 'Unknown fatal error occurred';
-        throw new handleError(500, message);
-    }
+
+    // check if user exist
+    const foundUser = await userModel.findOne(userModel);
+    if (foundUser) return foundUser;
+   
+    return userModel.create(userContact);
 }
 
 const findOne = async (user_id: number): Promise<IUser | any> => {
@@ -38,6 +39,11 @@ const update = async (userData: IUser): Promise<IUser | any> => {
     return updatedUser;
 }
 
+const generateUserToken = (user: IUser): string => {
+    const payload = { contact: user.email ? user.email : user.phone, id: user._id };
+    return jwt.sign(payload, process.env.JWT_SECRET);
+}
+
 const validateNewUser = (user: any): null | string => {
     if (!user.contact) return 'Contact field must not be empty';
     if (isNumeric(user.contact)) {
@@ -56,7 +62,7 @@ const validateUpdateUser = (user: any): null | string => {
     if (user.phone && isNumeric(user.phone)) {
         if (!isLength(user.phone, { min: 6, max: 15 })) return 'Phone must not be less than 6 or greater than 15 numbers';
     } else if (user.phone && !isNumeric(user.phone)) return 'Phone must be numeric';
-    if (user.email && !isEmail(user.phone)) return 'Contact email is invalid';
+    if (user.email && !isEmail(user.email)) return 'Contact email is invalid';
     return null;
 }
 
@@ -64,5 +70,6 @@ module.exports = {
     create,
     findOne,
     findAll,
-    update
+    update,
+    generateUserToken
 }
