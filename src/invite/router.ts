@@ -8,9 +8,18 @@ export const inviteRouter = express.Router();
 inviteRouter.post('/send', async (req: Request, res: Response) => {
     try {
         const response = await inviteService.create(req.body);
-        httpResponse.send(res, 201, 'Invitation sent', response);
+        httpResponse.send(res, 201, 'Invite sent', response);
     } catch(err) {
         httpResponse.send(res, err.statusCode, err.message, { invalidContacts: err.data || null });
+    }
+});
+
+inviteRouter.post('/accept', async (req: Request, res: Response) => {
+    try {
+        const response = await inviteService.acceptInvite(req.body);
+        httpResponse.send(res, 200, 'Invita accepted', response);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
     }
 });
 
