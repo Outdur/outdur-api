@@ -40,7 +40,7 @@ const update = async (userData: IUser): Promise<IUser | any> => {
 }
 
 const generateUserToken = (user: IUser): string => {
-    const payload = { contact: user.email ? user.email : user.phone, id: user._id };
+    const payload = { contact: user.email ? user.email : user.phone, id: user._id, user_id: user.user_id };
     return jwt.sign(payload, process.env.JWT_SECRET);
 }
 
