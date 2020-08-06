@@ -43,8 +43,8 @@ userRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
 //generate token for dev.
 userRouter.post('/', async (req: Request, res: Response) => {
     try {
-        const user = findOne("af9f2267-758a-4e17-8f47-e6c5d8d09cff");
-        console.log(user);
+        const user = await findOne("af9f2267-758a-4e17-8f47-e6c5d8d09cff");
+        // console.log(user);
         const token = generateUserToken(user);
         httpResponse.send(res, 200, null, token);
     } catch (err) {
