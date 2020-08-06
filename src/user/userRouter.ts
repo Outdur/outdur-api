@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 const userService = require("./userService");
 const httpResponse = require("../helpers/httpResponse");
 const authenticate = require('../middleware/verifyToken');
+const {findOne, generateUserToken} = require('./userService');
 
 
 export const userRouter = express.Router();
@@ -34,6 +35,18 @@ userRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
         req.body.user_id = req.params.id;
         const user = await userService.update(req.body);
         httpResponse.send(res, 200, null, user);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
+//generate token for dev.
+userRouter.post('/', async (req: Request, res: Response) => {
+    try {
+        const user = findOne("af9f2267-758a-4e17-8f47-e6c5d8d09cff");
+        console.log(user);
+        const token = generateUserToken(user);
+        httpResponse.send(res, 200, null, token);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
