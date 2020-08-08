@@ -1,12 +1,14 @@
 import express, { Request, Response } from "express";
 const inviteService = require("./service");
 const httpResponse = require("../helpers/httpResponse");
+const authenticate = require('../middleware/verifyToken');
 
 
 export const inviteRouter = express.Router();
 
-inviteRouter.post('/send', async (req: Request, res: Response) => {
+inviteRouter.post('/send', authenticate, async (req: Request, res: Response) => {
     try {
+        req.body.user = req.user;
         const response = await inviteService.create(req.body);
         httpResponse.send(res, 201, 'Invite sent', response);
     } catch(err) {

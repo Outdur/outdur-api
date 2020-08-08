@@ -19,7 +19,9 @@ const userSchema = new Schema({
             partialFilterExpression: { phone: { $type: "string" } }
         }
     },
-    photo_url: String
+    photo_url: String,
+    device_id: { type: String, unique: true },
+    device_platform: String
 }, { timestamps: true });
 
 export const userModel = mongoose.model('User', userSchema); 

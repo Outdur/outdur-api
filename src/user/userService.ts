@@ -5,18 +5,23 @@ import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
 const jwt = require('jsonwebtoken');
 
-
 const create = async (userData: any) => {
     const validationError = validateNewUser(userData);
     if (validationError) throw new handleError(422, validationError);
 
-    const userContact = isNumeric(userData.contact) ? { phone: userData.contact } : { email: userData.contact };
+    const key = isNumeric(userData.contact) ? 'phone' : 'email';
 
     // check if user exist
-    const foundUser = await userModel.findOne(userModel);
+    const foundUser = await userModel.findOne({ [key]: userData.contact });
     if (foundUser) return foundUser;
+
+    const user = {
+        [key]: userData.contact,
+        device_id: userData.device_id,
+        device_platform: userData.device_platform
+    };
    
-    return userModel.create(userContact);
+    return userModel.create(user);
 }
 
 const findOne = async (user_id: number): Promise<IUser | any> => {
@@ -40,7 +45,7 @@ const update = async (userData: IUser): Promise<IUser | any> => {
 }
 
 const generateUserToken = (user: IUser): string => {
-    const payload = { contact: user.email ? user.email : user.phone, id: user._id };
+    const payload = { contact: user.email ? user.email : user.phone, id: user._id, user_id: user.user_id };
     return jwt.sign(payload, process.env.JWT_SECRET);
 }
 

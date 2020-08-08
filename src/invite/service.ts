@@ -22,7 +22,7 @@ const create = async (inviteData: any) => {
         const invite = {
             [key]: contact,
             code: generateCode(),
-            user: '1'
+            user: inviteData.user.user_id
         };
         if (inviteData.event_id) invite.event_id = inviteData.event_id;
         if (inviteData.circle_id) invite.circle_id = inviteData.circle_id;
@@ -31,12 +31,16 @@ const create = async (inviteData: any) => {
     
     await inviteModel.insertMany(invites, { ordered: false });
 
+    // send email/sms
+
     return invalidContacts || [];
 }
 
 
 const acceptInvite = async (inviteData: any) => {
-    const { contact, code } = inviteData;
+    if (!inviteData.device_platform || !inviteData.device_id) throw new handleError(400, 'Device ID and Platform must be specified');
+
+    const { contact, code, device_id, device_platform } = inviteData;
     const contactKey = isNumeric(contact) ? 'phone' : 'email';
     const criteria = {
         [contactKey]: contact,
@@ -46,14 +50,9 @@ const acceptInvite = async (inviteData: any) => {
     if (!invite.length) throw new handleError(404, 'Invite not found');
 
     // create new user
-    const user = await userService.create({ contact });
+    const user = await userService.create({ contact, device_id, device_platform });
 
     const data: any = {};
-
-    if (invite.circle_id && invite.event_id) {
-        data.circle_id = inviteData.circle_id;
-        data.event_id = inviteData.event_id;
-    }
 
     if (invite.circle_id) {
         data.circle_id = inviteData.circle_id;

@@ -95,6 +95,8 @@ path:
                 example:
                   contact: 'example@email.com'   
                   code: 'SF9859WHF' 
+                  device_id: 00000000-89ABCDEF-01234567-89ABCDEF
+                  device_platform: android
         responses:
           "200":
             description: Invite accepted
