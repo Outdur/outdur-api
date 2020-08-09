@@ -22,7 +22,7 @@ const create = async (inviteData: any) => {
         const invite = {
             [key]: contact,
             code: generateCode(),
-            user: inviteData.user.user_id
+            user: inviteData.user.id
         };
         if (inviteData.event_id) invite.event_id = inviteData.event_id;
         if (inviteData.circle_id) invite.circle_id = inviteData.circle_id;

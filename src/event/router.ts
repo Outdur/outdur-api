@@ -1,13 +1,15 @@
 import express, { Request, Response } from "express";
 const eventService = require("./service");
 const httpResponse = require("../helpers/httpResponse");
+const authenticate = require('../middleware/verifyToken');
 
 
 export const eventRouter = express.Router();
 
 // create event
-eventRouter.post('/', async (req: Request, res: Response) => {
+eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
+        req.body.user = req.user;
         const newEvent = await eventService.create(req.body);
         httpResponse.send(res, 200, null, newEvent)
     } catch (err) {
@@ -39,7 +41,7 @@ eventRouter.get('/', async (req: Request, res: Response) => {
 
 
 // update event
-eventRouter.put('/:id', async (req: Request, res: Response) => {
+eventRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.event_id = req.params.id;
         const event = await eventService.update(req.body);
