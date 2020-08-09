@@ -1,13 +1,15 @@
 import express, { Request, Response } from "express";
 const circleService = require("./service");
 const httpResponse = require("../helpers/httpResponse");
+const authenticate = require('../middleware/verifyToken');
 
 
 export const circleRouter = express.Router();
 
 // create circle
-circleRouter.post('/', async (req: Request, res: Response) => {
+circleRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
+        req.body.user = req.user;
         const newcircle = await circleService.create(req.body);
         httpResponse.send(res, 200, null, newcircle)
     } catch (err) {
@@ -28,7 +30,7 @@ circleRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 // find many circles
-circleRouter.get('/', async (req: Request, res: Response) => {
+circleRouter.get('/', authenticate, async (req: Request, res: Response) => {
     try {
         const circles = await circleService.findAll();
         httpResponse.send(res, 200, null, circles);
