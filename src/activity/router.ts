@@ -5,7 +5,7 @@ import { activityModel, activityCategoryModel } from "./model";
 export const activityRouter = express.Router();
 
 activityRouter.get('/', async (req: Request, res: Response) => {
-    //await activityModel.deleteMany({});
+    //await activityCategoryModel.deleteMany({});
     try {
         const activities = await activityModel.find({}, ).populate('activity_category');
         httpResponse.send(res, 200, 'Activities fetched', { intersts: activities.map((activity: any) => activity.activity_title) });
@@ -17,7 +17,7 @@ activityRouter.get('/', async (req: Request, res: Response) => {
 // list activity categories
 activityRouter.get('/category', async (req: Request, res: Response) => {
     try {
-        const categories = await activityCategoryModel.find().populate('activities');
+        const categories = await activityCategoryModel.find();
         httpResponse.send(res, 200, 'Activities\' categories  fetched', categories);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
