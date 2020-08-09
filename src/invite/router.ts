@@ -6,7 +6,7 @@ const authenticate = require('../middleware/verifyToken');
 
 export const inviteRouter = express.Router();
 
-inviteRouter.get('/send', async (req: Request, res: Response) => {
+inviteRouter.get('/', async (req: Request, res: Response) => {
     try {
         const invites = await inviteService.find();
         httpResponse.send(res, 200, null, invites);
