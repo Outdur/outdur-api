@@ -31,7 +31,7 @@ app.use('/api/docs', api_doc);
 app.use('/users', userRouter);
 app.use('/events', eventRouter);
 app.use('/circles', circleRouter);
-app.use('/invites', inviteRouter);
+app.use('/outdur', inviteRouter);
 app.use('/media', imgServiceRouter);
 
 app.use(errorHandler);
