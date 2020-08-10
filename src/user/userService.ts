@@ -3,6 +3,8 @@ import { IUsers } from "./usersInterface";
 import { isEmail, isLength, isNumeric } from "../helpers/validator";
 import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
+import { activityModel } from "../activity/model";
+import { userInterestModel } from "./userInterestModel";
 const jwt = require('jsonwebtoken');
 
 const create = async (userData: any) => {
@@ -30,18 +32,40 @@ const findOne = async (user_id: number): Promise<IUser | any> => {
     return user;
 }
 
-const findAll = async (): Promise<IUsers | any[]> => {
+const find = async (): Promise<IUsers | any[]> => {
     return await userModel.find();
 }
 
-const update = async (userData: IUser): Promise<IUser | any> => {
+const update = async (userData: any): Promise<IUser | any> => {
+    const id = userData.user.id;
+    delete userData.user;
+    
     const validationError = validateUpdateUser(userData);
     if (validationError) throw new handleError(422, validationError);
     
-    const user_id = userData.user_id;
-    delete userData.user_id;
-    const updatedUser = await userModel.findOneAndUpdate({ user_id }, userData, { new: true });
+    const updatedUser = await userModel.findByIdAndUpdate(id, userData, { new: true });
     return updatedUser;
+}
+
+const listUserInterests = async (user_id: number): Promise<object> => {
+    return userInterestModel.findOne({ user_id }).populate('interests');
+}
+
+const updateInterest = async (userInterests: any): Promise<any> => {
+    if (Array.isArray(userInterests.interests) && !userInterests.interests.length) throw new handleError(422, 'Interest cannot be empty');
+    if (!userInterests.interests || !Array.isArray(userInterests.interests)) throw new handleError(422, 'Interests field must be an array');
+
+    let userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id });
+    if (!userInterest) userInterest = await userInterestModel.create({ user_id: userInterests.user_id });
+
+    userInterests.interests.forEach(async (interest: string) => {
+        const foundInterest = await activityModel.findOne({ activity_title: interest });
+        if (foundInterest) {
+            userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id }).populate('interests');
+            userInterest.interests.find((_interest: any) => _interest.activity_title !== interest) && userInterest.interests.push(foundInterest);
+            await userInterest.save();
+        }
+    });
 }
 
 const generateUserToken = (user: IUser): string => {
@@ -61,9 +85,9 @@ const validateNewUser = (user: any): null | string => {
 
 const validateUpdateUser = (user: any): null | string => {
     Object.keys(user).forEach(key => {
-        if (!['email', 'phone', 'firstname', 'lastname', 'user_id'].includes(key)) throw new Error(`The field ${key} is not allowed`);
+        if (!['phone', 'firstname', 'lastname'].includes(key)) throw new Error(`The field ${key} is not allowed`);
     });
-    
+
     if (user.phone && isNumeric(user.phone)) {
         if (!isLength(user.phone, { min: 6, max: 15 })) return 'Phone must not be less than 6 or greater than 15 numbers';
     } else if (user.phone && !isNumeric(user.phone)) return 'Phone must be numeric';
@@ -74,7 +98,9 @@ const validateUpdateUser = (user: any): null | string => {
 module.exports = {
     create,
     findOne,
-    findAll,
+    find,
     update,
+    updateInterest,
+    listUserInterests,
     generateUserToken
 }
