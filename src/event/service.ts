@@ -65,6 +65,7 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
 module.exports = {
     create,
     findOne,
+    findUserEvents,
     findAll,
     update
 };

@@ -30,7 +30,7 @@ eventRouter.get('/:id', async (req: Request, res: Response) => {
 // find user events
 eventRouter.get('/user', authenticate, async (req: Request, res: Response) => {
     try {
-        const events = await eventService.findOne(req.user);
+        const events = await eventService.findUserEvents(req.user);
         httpResponse.send(res, 200, null, events)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
