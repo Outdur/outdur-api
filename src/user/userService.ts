@@ -48,19 +48,23 @@ const update = async (userData: any): Promise<IUser | any> => {
 }
 
 const listUserInterests = async (user_id: number): Promise<object> => {
-    return userInterestModel.find({ user_id });
+    return userInterestModel.findOne({ user_id }).populate('interests');
 }
 
 const updateInterest = async (userInterests: any): Promise<any> => {
-    if (!userInterests.interests) throw new handleError(422, 'No interest was specified');
+    if (Array.isArray(userInterests.interests) && !userInterests.interests.length) throw new handleError(422, 'Interest cannot be empty');
+    if (!userInterests.interests || !Array.isArray(userInterests.interests)) throw new handleError(422, 'Interests field must be an array');
 
-    let userInterest = await userInterestModel.find({ user_id: userInterests.user_id }).populate('interests');
+    let userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id });
     if (!userInterest) userInterest = await userInterestModel.create({ user_id: userInterests.user_id });
 
     userInterests.interests.forEach(async (interest: string) => {
-        const userInterest = await activityModel.findOne({ activity_title: interest });
-        userInterest.interests.push(userInterest);
-        await userInterest.save();
+        const foundInterest = await activityModel.findOne({ activity_title: interest });
+        if (foundInterest) {
+            userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id }).populate('interests');
+            userInterest.interests.find((_interest: any) => _interest.activity_title !== interest) && userInterest.interests.push(foundInterest);
+            await userInterest.save();
+        }
     });
 }
 
