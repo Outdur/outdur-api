@@ -79,3 +79,73 @@ path:
             application/json:
                 schema:
                   $ref: '#/components/schemas/User'
+  /users/interests:
+    put:
+      summary: Update user interest
+      tags: [User Interests]     
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interests:
+                  type: array
+              example:
+                interests:
+                  - Hiking
+                  - Table tennis           
+      responses:
+        "200":
+          description: User interests updated
+          content:
+            application/json:
+              schema:
+                example:
+                  status: true
+                  data: {}    
+    get:
+      summary: Fetch user interests
+      tags: [User Interests]          
+      responses:
+        "200":
+          description: User interests fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: object
+                example:
+                  status: true
+                  data:
+                    interests:
+                      - 'Hiking'
+                      - 'Table tennis'        
+  /interests:
+    get:
+      summary: Fetch all interests
+      tags: [Interests]          
+      responses:
+        "200":
+          description: Interests fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: object
+                example:
+                  status: true
+                  data:
+                    interests:
+                      - 'Hiking'
+                      - 'Table tennis' 
+                      - 'Video game'                           

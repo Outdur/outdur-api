@@ -34,7 +34,7 @@ app.use('/events', eventRouter);
 app.use('/circles', circleRouter);
 app.use('/invites', inviteRouter);
 app.use('/media', imgServiceRouter);
-app.use('/activities', activityRouter);
+app.use('/interests', activityRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
