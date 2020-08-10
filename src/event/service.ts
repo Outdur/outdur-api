@@ -6,8 +6,9 @@ import { circleModel } from "../circle/model";
 
 
 
-const create = async (eventData: any): Promise<IEvent> => {
+const create = async (eventData: any, user: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
+    eventData.user_id = user.id;
     if (validationError) throw new handleError(422, validationError);
 
     return await eventModel.create(eventData);
@@ -21,6 +22,10 @@ const findOne = async (event_id: number): Promise<IEvent> => {
 
 const findAll = async (): Promise<IEvents> => {
     return await eventModel.find();
+}
+
+const findUserEvents = async (user: any): Promise<IEvents> => {
+    return await eventModel.find({ user_id: user.id });
 }
 
 const update = async (event: IEvent): Promise<IEvent> => {

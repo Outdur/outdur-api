@@ -45,7 +45,7 @@ userRouter.post('/', async (req: Request, res: Response) => {
     try {
         const user = await findOne("af9f2267-758a-4e17-8f47-e6c5d8d09cff");
         // console.log(user);
-        const token = generateUserToken(user);
+        const token = await generateUserToken(user);
         httpResponse.send(res, 200, null, token);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
