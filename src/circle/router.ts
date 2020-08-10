@@ -30,7 +30,7 @@ circleRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 // find many circles
-circleRouter.get('/', authenticate, async (req: Request, res: Response) => {
+circleRouter.get('/', async (req: Request, res: Response) => {
     try {
         const circles = await circleService.findAll();
         httpResponse.send(res, 200, null, circles);
@@ -41,7 +41,7 @@ circleRouter.get('/', authenticate, async (req: Request, res: Response) => {
 
 
 // update circle
-circleRouter.put('/:id', async (req: Request, res: Response) => {
+circleRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.circle_id = req.params.id;
         const circle = await circleService.update(req.body);
