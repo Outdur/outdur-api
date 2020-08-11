@@ -10,7 +10,7 @@ export const eventRouter = express.Router();
 eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
         const newEvent = await eventService.create(req.body, req.user);
-        httpResponse.send(res, 200, null, newEvent)
+        httpResponse.send(res, 201, null, newEvent)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
