@@ -21,7 +21,7 @@ eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
 eventRouter.get('/:id', async (req: Request, res: Response) => {
     try {
         const event = await eventService.findOne(req.params.id);
-        httpResponse.send(res, 200, null, event)
+        httpResponse.send(res, 201, null, event)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }

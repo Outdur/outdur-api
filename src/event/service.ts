@@ -11,7 +11,7 @@ const create = async (eventData: any, user: any): Promise<IEvent> => {
     eventData.user_id = user.id;
     if (validationError) throw new handleError(422, validationError);
 
-    return await eventModel.create(eventData);
+    return eventModel.create(eventData);
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
