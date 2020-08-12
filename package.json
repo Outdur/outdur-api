@@ -12,10 +12,12 @@
   "author": "Outdur Devs",
   "license": "ISC",
   "dependencies": {
+    "@types/chance": "^1.1.0",
     "@types/express-serve-static-core": "^4.17.8",
     "@types/mongoose": "^5.7.31",
     "aws-sdk": "^2.720.0",
     "chai-as-promised": "^7.1.1",
+    "chance": "^1.1.6",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",

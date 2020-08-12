@@ -1,5 +1,6 @@
+const Chance = require('chance');
+const chance = new Chance();
 
 export const generateCode = function (){
-  let code =  Math.random().toString(36).slice(2) + Math.random().toString(36).toUpperCase().slice(2); 
-  return code
+  return chance.string({ length: 8, casing: 'upper', alpha: true, numeric: true });
 }

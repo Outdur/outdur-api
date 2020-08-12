@@ -49,7 +49,6 @@ activityRouter.post('/', async (req: Request, res: Response) => {
     try {
         const response = await activityModel.create(req.body);
         const category = await activityCategoryModel.findById(req.body.activity_category).populate('activities');
-        console.log(category)
         category.activities.push(response);
         category.save();
         httpResponse.send(res, 200, 'Category created', response);
