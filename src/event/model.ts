@@ -11,6 +11,7 @@ const eventSchema = new Schema({
     event_date: Date,
     user_id: { type: String, index: true },
     circle_id: { type: String, index: true },
+    photo_url: String
 }, { timestamps: true });
 
-export const eventModel = mongoose.model('Event', eventSchema); 
+export const eventModel = mongoose.model('Event', eventSchema);

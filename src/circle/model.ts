@@ -8,6 +8,7 @@ const circleSchema = new Schema({
     name: String,
     description: String,
     type: { type: String, default: 'Unregistered' },
+    photo_url: String,
     user_id: { type: String, index: true },
     events: [{ type: Schema.Types.ObjectId, ref: 'Event' }]
 }, { timestamps: true });
