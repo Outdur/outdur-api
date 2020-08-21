@@ -11,7 +11,6 @@ export const getObject = async (bucketName, key) => {
     if (!key) throw new handleError(422, 'key must have a value');
 
     const params = { Bucket: bucketName, Key: key };
-    console.log(params)
     return new Promise((resolve, reject) => {
         s3Service.getObject(params, (err, data) => {
             if (err) return reject(err);
@@ -31,8 +30,23 @@ export const putObject = async (bucketName, key, body, ContentType) => {
         
     return new Promise((resolve, reject) => {
         s3Service.putObject(params, (err, data) => {
-        if (err) reject(err)
+            if (err) reject(err)
             return resolve(data);
         });
     });
 };
+
+export const upload = async (bucketName, key, body) => {
+    const params = {
+        Bucket: bucketName,
+        Key: key,
+        Body: body,
+    };
+        
+    return new Promise((resolve, reject) => {
+        s3Service.upload(params, (err, data) => {
+            if (err) reject(err)
+            return resolve(data);
+        });
+    });
+}
