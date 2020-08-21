@@ -7,7 +7,8 @@ const circleSchema = new Schema({
     circle_id: { type: String, default: MUUID.v4(), index: true },
     name: String,
     description: String,
-    type: String,
+    type: { type: String, default: 'Unregistered' },
+    photo_url: String,
     user_id: { type: String, index: true },
     events: [{ type: Schema.Types.ObjectId, ref: 'Event' }]
 }, { timestamps: true });

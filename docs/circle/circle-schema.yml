@@ -10,7 +10,9 @@ components:
         type:
             type: string
         description:
-            type: string    
+            type: string 
+        photo_url:
+            type: string       
         user:
             type: object
             properties:
@@ -25,7 +27,7 @@ components:
               email:
                   type: string
               phone:
-                  type: string
+                  type: string    
               status:
                     type: string           
       example:
@@ -50,6 +52,8 @@ components:
             type:
               type: string
             description:
+              type: string  
+            photo_url:
               type: string  
             members:
               type: integer     

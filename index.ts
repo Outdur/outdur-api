@@ -11,6 +11,7 @@ import { eventRouter } from "./src/event/router";
 import { circleRouter } from "./src/circle/router";
 import { imgServiceRouter } from "./src/helpers/imageHelper";
 import { inviteRouter } from "./src/invite/router";
+import { activityRouter } from "./src/activity/router";
 
 require('dotenv').config();
 
@@ -31,8 +32,9 @@ app.use('/api/docs', api_doc);
 app.use('/users', userRouter);
 app.use('/events', eventRouter);
 app.use('/circles', circleRouter);
-app.use('/outdur', inviteRouter);
+app.use('/invites', inviteRouter);
 app.use('/media', imgServiceRouter);
+app.use('/interests', activityRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);

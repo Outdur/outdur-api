@@ -6,6 +6,8 @@ import { userModel } from "../user/userModel";
 
 
 const create = async (circleData: any): Promise<ICircle> => {
+    circleData.user_id = circleData.user.id;
+    delete circleData.user;
     const validationError = await validateCircle(circleData);
     if (validationError) throw new handleError(422, validationError);
 
@@ -41,10 +43,10 @@ const validateCircle = async (circle: ICircle): Promise<null | string> => {
         // we don't want any of these to be edited
         (['user_id', 'circle_id', 'type'] as const).forEach(key => { delete circle[key]; });
     } else {
-        if (!await userModel.findOne({ user_id: circle.user_id })) return 'Invalid user_id';
+        if (!await userModel.findById(circle.user_id)) return 'Invalid user_id';
         if (!circle.name) return 'Circle must have a name';
         if (!circle.description) return 'Circle must have a description';
-        if (!circle.type) return 'Circle must have a type';
+        if (circle.type) if (!['Registered', 'Unregistered'].includes(circle.type)) return 'Invalid circle type. Valid types are Registered and Unregistered';
         if (!circle.user_id) return 'User_id must be specified';
     }
     return null;

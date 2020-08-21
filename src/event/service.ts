@@ -6,10 +6,12 @@ import { circleModel } from "../circle/model";
 
 
 
-const create = async (eventData: any, user: any): Promise<IEvent> => {
+const create = async (eventData: any): Promise<IEvent> => {
+    eventData.user_id = eventData.user.id;
+    delete eventData.user;
     const validationError = await validateEvent(eventData);
-    eventData.user_id = user.id;
-    if (validationError) throw new handleError(422, validationError);
+    // eventData.user_id = user.id;
+    // if (validationError) throw new handleError(422, validationError);
 
     return eventModel.create(eventData);
 }
@@ -55,7 +57,7 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
         if (!event.event_date) return 'Event must have a date';
         if (!event.user_id && !event.circle_id) return 'Event must have a user_id or circle_id';
         if (event.user_id && event.circle_id) return 'Event cannot have both user_id and circle_id. Only one of them can be set';
-        if (event.user_id) if (!await userModel.findOne({ user_id: event.user_id })) return 'Invalid user_id';
+        if (event.user_id) if (!await userModel.findById(event.user_id)) return 'Invalid user_id';
         if (event.circle_id) if (!await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
     return null;

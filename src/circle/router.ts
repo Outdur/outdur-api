@@ -1,13 +1,15 @@
 import express, { Request, Response } from "express";
 const circleService = require("./service");
 const httpResponse = require("../helpers/httpResponse");
+const authenticate = require('../middleware/verifyToken');
 
 
 export const circleRouter = express.Router();
 
 // create circle
-circleRouter.post('/', async (req: Request, res: Response) => {
+circleRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
+        req.body.user = req.user;
         const newcircle = await circleService.create(req.body);
         httpResponse.send(res, 200, null, newcircle)
     } catch (err) {
@@ -39,7 +41,7 @@ circleRouter.get('/', async (req: Request, res: Response) => {
 
 
 // update circle
-circleRouter.put('/:id', async (req: Request, res: Response) => {
+circleRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.circle_id = req.params.id;
         const circle = await circleService.update(req.body);

@@ -17,9 +17,12 @@ path:
                       type: string
                   description:
                       type: string
+                  photo_url:
+                      type: string    
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
+                  photo_url: http://photo-url
         responses:
           "201":
             description: Circle created
@@ -86,6 +89,7 @@ path:
                       - name: 'Sports Club'
                         type: 'Registered'
                         description: 'This circle is goos circle'
+                        photo_url: http://photo-url
                         members: 13
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
     /circles/:id:
@@ -124,6 +128,7 @@ path:
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
+                  photo_url: http://photo-url
         responses:
           "200":
             description: Circle updated
@@ -215,14 +220,14 @@ path:
                     status: 
                       type: boolean
                     data:
-                      type: array
+                      type: object
                       example:
                         - event_id: 1UFDHF-U989D-FHKJK3-33JJS
                           title: Weekend Road walk 
                           description: This event is an activity   
                           event_type: circle-event
                           location: 109 Shalaba Avenue
-                          circle: 17
+                          photo_url: http://photo-url
                           event_tags: 'sports, gym, challenge'
                           event_date: 23/08/2020              
       post:          

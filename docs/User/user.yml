@@ -24,23 +24,6 @@ path:
                       email: outdur@example.com 
                       phone: 09010000000   
                       status: Pending
-  /users/:id:
-    get:
-      summary: Find user and return details
-      tags: [User]
-      parameters:
-        - in: path
-          id:
-          schema:
-            type: string
-          required: true
-      responses:
-        "200":
-          description: User found
-          content:
-            application/json:
-                schema:
-                  $ref: '#/components/schemas/User'
     put:
       summary: Update user information
       tags: [User]     
@@ -62,7 +45,7 @@ path:
                 photo_url:
                   type: string  
                 status: 
-                  type: string             
+                  type: bookean             
       responses:
         "200":
           description: User updated
@@ -78,4 +61,91 @@ path:
                     email: outdur@example.com 
                     phone: 09010000000  
                     photo_url: https://photo-url 
-                    status: Pending        
+                    status: Pending                          
+  /users/:id:
+    get:
+      summary: Find user and return details
+      tags: [User]
+      parameters:
+        - in: path
+          id:
+          schema:
+            type: string
+          required: true
+      responses:
+        "200":
+          description: User found
+          content:
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/User'
+  /users/interests:
+    put:
+      summary: Update user interest
+      tags: [User Interests]     
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                interests:
+                  type: array
+              example:
+                interests:
+                  - Hiking
+                  - Table tennis           
+      responses:
+        "200":
+          description: User interests updated
+          content:
+            application/json:
+              schema:
+                example:
+                  status: true
+                  data: {}    
+    get:
+      summary: Fetch user interests
+      tags: [User Interests]          
+      responses:
+        "200":
+          description: User interests fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: object
+                example:
+                  status: true
+                  data:
+                    interests:
+                      - 'Hiking'
+                      - 'Table tennis'        
+  /interests:
+    get:
+      summary: Fetch all interests
+      tags: [Interests]          
+      responses:
+        "200":
+          description: Interests fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: boolean
+                  data:
+                    type: object
+                example:
+                  status: true
+                  data:
+                    interests:
+                      - 'Hiking'
+                      - 'Table tennis' 
+                      - 'Video game'                           

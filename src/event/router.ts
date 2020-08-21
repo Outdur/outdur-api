@@ -9,7 +9,8 @@ export const eventRouter = express.Router();
 // create event
 eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
-        const newEvent = await eventService.create(req.body, req.user);
+        req.body.user = req.user;
+        const newEvent = await eventService.create(req.body);
         httpResponse.send(res, 200, null, newEvent)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
@@ -50,7 +51,7 @@ eventRouter.get('/', async (req: Request, res: Response) => {
 
 
 // update event
-eventRouter.put('/:id', async (req: Request, res: Response) => {
+eventRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.event_id = req.params.id;
         const event = await eventService.update(req.body);
