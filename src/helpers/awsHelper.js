@@ -49,4 +49,4 @@ export const upload = async (bucketName, key, body) => {
             return resolve(data);
         });
     });
-}
+};

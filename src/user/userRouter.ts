@@ -56,7 +56,7 @@ userRouter.get('/', async (req: Request, res: Response) => {
 userRouter.put('/', authenticate, async (req: Request, res: Response) => {
     try {
         req.body.user = req.user;
-        const user = await userService.update(req.body);
+        const user = await userService.update(req.body, req.files);
         httpResponse.send(res, 200, null, user);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

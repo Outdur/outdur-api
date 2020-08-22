@@ -42,10 +42,10 @@ path:
                   type: string 
                 phone: 
                   type: string   
-                photo_url:
-                  type: string  
+                photo:
+                  type: file  
                 status: 
-                  type: bookean             
+                  type: boolean             
       responses:
         "200":
           description: User updated

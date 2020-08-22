@@ -5,6 +5,7 @@ import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
 import { activityModel } from "../activity/model";
 import { userInterestModel } from "./userInterestModel";
+import { upload } from '../helpers/awsHelper';
 const jwt = require('jsonwebtoken');
 
 const create = async (userData: any) => {
@@ -24,6 +25,7 @@ const create = async (userData: any) => {
     };
    
     return userModel.create(user);
+
 }
 
 const findOne = async (user_id: number): Promise<IUser | any> => {
@@ -36,12 +38,21 @@ const find = async (): Promise<IUsers | any[]> => {
     return await userModel.find();
 }
 
-const update = async (userData: any): Promise<IUser | any> => {
+const update = async (userData: any, photoFile: any | null): Promise<IUser | any> => {
     const id = userData.user.id;
     delete userData.user;
     
     const validationError = validateUpdateUser(userData);
     if (validationError) throw new handleError(422, validationError);
+
+    if (photoFile) {
+        const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
+        upload('outdoor-imgs', key, photoFile.photo.data).then(async (data: any) => {
+            await userModel.findByIdAndUpdate(id, { photo_url: data.Location });
+        }).catch((err: any) => {
+            console.log(err);
+        });
+    }
     
     const updatedUser = await userModel.findByIdAndUpdate(id, userData, { new: true });
     return updatedUser;
