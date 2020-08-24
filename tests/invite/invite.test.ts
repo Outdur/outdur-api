@@ -1,6 +1,6 @@
 import chai, { expect } from 'chai';
 import chaiHttp from 'chai-http';
-var chaiAsPromised = require("chai-as-promised");
+const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 const server = require('../../index');
