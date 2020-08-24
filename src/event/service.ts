@@ -3,6 +3,7 @@ import { eventModel } from './model';
 import { IEvent, IEvents } from './interface';
 import { userModel } from "../user/userModel";
 import { circleModel } from "../circle/model";
+import { upload } from '../helpers/awsHelper';
 
 
 
@@ -12,7 +13,19 @@ const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
     if (validationError) throw new handleError(422, validationError);
 
-    return await eventModel.create(eventData);
+    const newEvent = await eventModel.create(eventData);
+
+    if (eventData.event_picture) {
+        const pic_name = newEvent.title.split(' ').join('-') + `_${newEvent.id}`;
+        const key = `event_pictures/${pic_name}${require('path').extname(eventData.event_picture.picture.name)}`;
+        upload('outdoor-imgs', key, eventData.event_picture.picture.data).then(async (data: any) => {
+            await eventModel.findByIdAndUpdate(newEvent.id, { picture_url: data.Location });
+        }).catch((err: any) => {
+            console.log(err);
+        });
+    }
+
+    return newEvent;
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
