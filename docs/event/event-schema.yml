@@ -17,7 +17,7 @@ components:
             - "user-event"
             - "circle-event"   
             - "league" 
-        location:
+        venue:
             type: string
         user:
             type: integer  
@@ -26,14 +26,14 @@ components:
         event_tags:
             type: string     
         event_date:
-            type: date       
+            type: date      
+        picture:
+            type: string     
       example:
           title: Weekend Road walk 
           description: This event is an activity   
           event_type: circle-event
-          location: 109 Shalaba Avenue
-          photo_url: http://photo-url
-          circle: 17
+          venue: 109 Shalaba Avenue
           event_tags: 'sports, gym, challenge'
           event_date: 23/08/2020
     EventResponse:
@@ -48,9 +48,8 @@ components:
             title: Weekend Road walk 
             description: This event is an activity   
             event_type: circle-event
-            location: 109 Shalaba Avenue
-            photo_url: http://photo-url
-            circle: 17
+            venue: 109 Shalaba Avenue
+            picture_url: http://photo-url
             event_tags: 'sports, gym, challenge'
             event_date: 23/08/2020
       

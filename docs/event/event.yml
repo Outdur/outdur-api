@@ -1,0 +1,127 @@
+paths:
+  /events:
+    post:
+      summary: Creates new event
+      tags: [Event]
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: picture
+          type: file
+          description: The picture to upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'    
+      responses:
+        "201":
+          description: Event created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'    
+    get:
+      summary: Fetch events (for activities page)
+      tags: [Event]                
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Events fetched. (We'll customize this events based on user interests)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: boolean
+                  data:
+                    type: object
+                    example:
+                      - event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                        title: Weekend Road walk 
+                        description: This event is an activity   
+                        event_type: circle-event
+                        venue: 109 Shalaba Avenue
+                        photo_url: http://photo-url
+                        event_tags: 'sports, gym, challenge'
+                        event_date: 23/08/2020    
+    put:
+      summary: Update event
+      tags: [Event]
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: picture
+          type: file
+          description: The picture to upload
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true  
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Event'    
+      responses:
+        "200":
+          description: Event Updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventResponse'        
+  /events/:id:
+    get:
+      summary: Fetch event
+      tags: [Event]                
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Event fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: boolean
+                  data:
+                    type: object
+                    example:
+                      event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      title: Weekend Road walk 
+                      description: This event is an activity   
+                      event_type: circle-event
+                      venue: 109 Shalaba Avenue
+                      photo_url: http://photo-url
+                      event_tags: 'sports, gym, challenge'
+                      event_date: 23/08/2020  
+                      user:
+                        firstname: Olokpa
+                        lastname: Udom
+                        photo: http://photo-url  
+                        id: 1UFDHF-U989D-FHKJK3-33JJS
+                      comments:
+                        - comment: This is event is lit!
+                          date_posted: 12/09/2020
+                          user:
+                            firstname: Olokpa
+                            lastname: Udom
+                            photo: http://photo-url  
+                            id: 1UFDHF-U989D-FHKJK3-33JJS  

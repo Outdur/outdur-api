@@ -79,6 +79,45 @@ path:
             application/json:
                 schema:
                   $ref: '#/components/schemas/User'
+  /users/events:
+    get:
+      summary: Fetch upcoming events the user has created.
+      tags: [User Events]                
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+        - in: query
+          name: filter
+          schema:
+            type: string
+            enum:
+              - upcoming
+              - previous
+              - cancelled  
+      responses:
+        "200":
+          description: (User) Events fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: boolean
+                  data:
+                    type: object
+                    example:
+                      - event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                        title: Weekend Road walk 
+                        description: This event is an activity   
+                        event_type: circle-event
+                        venue: 109 Shalaba Avenue
+                        photo_url: http://photo-url
+                        event_tags: 'sports, gym, challenge'
+                        event_date: 23/08/2020                    
   /users/interests:
     put:
       summary: Update user interest

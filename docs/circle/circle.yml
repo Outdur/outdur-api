@@ -205,7 +205,7 @@ path:
         tags: [Circle Event]                
         parameters:
           - in: path
-            id:
+            name: id
             schema:
               type: integer
             required: true
@@ -238,14 +238,34 @@ path:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Event'
+                type: object
+                properties:
+                example:
+                  title: Weekend Road walk 
+                  description: This event is an activity   
+                  event_type: circle-event
+                  location: 109 Shalaba Avenue
+                  circle_id: 1UFDHF-U989D-FHKJK3-33JJS
+                  event_tags: 'sports, gym, challenge'
+                  event_date: 23/08/2020
         responses:
           "201":
-            description: Circle created
+            description: Circle event created
             content:
               application/json:
                   schema:
-                    $ref: '#/components/schemas/EventResponse'
+                    type: object
+                    properties:
+                    example:
+                      event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      title: Weekend Road walk 
+                      description: This event is an activity   
+                      event_type: circle-event
+                      location: 109 Shalaba Avenue
+                      circle_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      event_tags: 'sports, gym, challenge'
+                      event_date: 23/08/2020
+                      photo_url: http://photo-url
       delete:
         summary: Delete circle event
         tags: [Circle Event]
@@ -262,7 +282,6 @@ path:
               application/json:
                   schema:
                     $ref: '#/components/schemas/EventResponse'        
-
     /circles/:id/discussion:
       get:
         summary: Fetch circle events
