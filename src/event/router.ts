@@ -32,7 +32,7 @@ eventRouter.get('/:id', async (req: Request, res: Response) => {
 // find many events
 eventRouter.get('/', async (req: Request, res: Response) => {
     try {
-        const events = await eventService.findAll();
+        const events = await eventService.find();
         httpResponse.send(res, 200, null, events);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

@@ -34,7 +34,7 @@ const findOne = async (event_id: number): Promise<IEvent> => {
     return event;
 }
 
-const findAll = async (): Promise<IEvents> => {
+const find = async (): Promise<IEvents> => {
     return await eventModel.find();
 }
 
@@ -75,6 +75,6 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
 module.exports = {
     create,
     findOne,
-    findAll,
+    find,
     update
 };
