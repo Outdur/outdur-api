@@ -8,9 +8,6 @@ import { getObject, putObject } from './awsHelper';
 export const imgServiceRouter = express.Router();
 
 imgServiceRouter.get("/notfound", async (req, res) => {
-    const bucketName = 'outdoor-imgs';
-    const bucketUrl = 'https://outdoor-imgs.s3.us-east-2.amazonaws.com';
-
     try {
         const imgUrl = req.query.url;
         if (!imgUrl) throw new handleError(404, 'Image URL not found');
@@ -33,12 +30,12 @@ imgServiceRouter.get("/notfound", async (req, res) => {
 
         // download the original image
         const originalFilename = `${splittedFilenameByTasks[0]}.${fileExtension}`;
-        const { Body, ContentType } = await getObject(bucketName, originalFilename);
+        const { Body, ContentType } = await getObject(process.env.BUCKET_NAME, originalFilename);
 
         const image = Buffer.from(Body);
         const convertedImageBuffer = await sharpImageConverter(image, tasks);
-        await putObject(bucketName, imgUrl, convertedImageBuffer, ContentType);
-        return res.redirect(`${bucketUrl}/${imgUrl}`);
+        await putObject(process.env.BUCKET_NAME, imgUrl, convertedImageBuffer, ContentType);
+        return res.redirect(`${process.env.BUCKET_STATIC_URL}/${imgUrl}`);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }

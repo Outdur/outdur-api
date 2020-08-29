@@ -47,8 +47,8 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
 
     if (photoFile) {
         const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
-        upload('outdoor-imgs', key, photoFile.photo.data).then(async (data: any) => {
-            await userModel.findByIdAndUpdate(id, { photo_url: data.Location });
+        upload(process.env.BUCKET_NAME, key, photoFile.photo.data).then(async () => {
+            await userModel.findByIdAndUpdate(id, { photo_url: process.env.BUCKET_STATIC_URL + key });
         }).catch((err: any) => {
             console.log(err);
         });

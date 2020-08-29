@@ -9,6 +9,7 @@ const eventSchema = new Schema({
     description: String,
     venue: String,
     event_date: Date,
+    event_tags: { type: String, index: 'text' },
     user_id: { type: String, index: true },
     circle_id: { type: String, index: true },
     picture_url: String
