@@ -46,6 +46,10 @@ const update = async (event: any): Promise<IEvent> => {
     return updatedEvent;
 }
 
+const deleteEvent = async (id: number) => {
+    return eventModel.deleteOne({ _id: id });
+}
+
 const validateEvent = async (event: IEvent): Promise<null | string> => {
     if (event.event_id) {
         if (!await eventModel.findOne({ event_id: event.event_id })) throw new handleError(404, 'Event not found');
@@ -89,5 +93,6 @@ module.exports = {
     create,
     findOne,
     find,
-    update
+    update,
+    deleteEvent
 };

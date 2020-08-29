@@ -50,3 +50,13 @@ eventRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
         httpResponse.send(res, err.statusCode, err.message);
     }
 });
+
+// delete event
+eventRouter.delete('/:id', authenticate, async (req: Request, res: Response) => {
+    try {
+        await eventService.deleteEvent(req.params.id);
+        httpResponse.send(res, 200);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+})
