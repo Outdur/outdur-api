@@ -16,13 +16,7 @@ const create = async (eventData: any): Promise<IEvent> => {
     const newEvent = await eventModel.create(eventData);
 
     if (eventData.event_picture) {
-        const pic_name = newEvent.title.split(' ').join('-') + `_${newEvent.id}`;
-        const key = `event_pictures/${pic_name}${require('path').extname(eventData.event_picture.picture.name)}`;
-        upload('outdoor-imgs', key, eventData.event_picture.picture.data).then(async (data: any) => {
-            await eventModel.findByIdAndUpdate(newEvent.id, { picture_url: data.Location });
-        }).catch((err: any) => {
-            console.log(err);
-        });
+        uploadPicture(eventData.event_picture, newEvent);
     }
 
     return newEvent;
@@ -35,15 +29,20 @@ const findOne = async (event_id: number): Promise<IEvent> => {
 }
 
 const findAll = async (): Promise<IEvents> => {
-    return await eventModel.find();
+    return eventModel.find();
 }
 
-const update = async (event: IEvent): Promise<IEvent> => {
+const update = async (event: any): Promise<IEvent> => {
     const event_id = event.event_id;
     const validationError = await validateEvent(event);
     if (validationError) throw new handleError(422, validationError);
 
     const updatedEvent = await eventModel.findOneAndUpdate({ event_id }, event, { new: true });
+
+    if (event.event_picture) {
+        uploadPicture(event.event_picture, updatedEvent);
+    }
+
     return updatedEvent;
 }
 
@@ -55,6 +54,7 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
         if (event.description !== undefined && !event.description) return 'Event description cannot be empty';
         if (event.venue !== undefined && !event.venue) return 'Event must have a venue';
         if (event.event_date !== undefined && !event.event_date) return 'Event must have a date';
+        if (event.event_tags !== undefined && !event.event_tags) return 'Event must have at least one tag';
         
         // we don't want any of these to be edited
         (['user_id', 'circle_id', 'event_id'] as const).forEach(key => { delete event[key]; });
@@ -63,13 +63,26 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
         if (!event.description) return 'Event must have a description';
         if (!event.venue) return 'Event must have a venue';
         if (!event.event_date) return 'Event must have a date';
+        if (!event.event_tags) return 'Event must have at least one tag';
         if (!event.user_id && !event.circle_id) return 'Event must have a user_id or circle_id';
         if (event.user_id && event.circle_id) return 'Event cannot have both user_id and circle_id. Only one of them can be set';
-        if (event.user_id) if (!await userModel.findById(event.user_id)) return 'Invalid user_id';
-        if (event.circle_id) if (!await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
+        if (event.user_id && !await userModel.findById(event.user_id)) return 'Invalid user_id';
+        if (event.circle_id && !await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
     return null;
 };
+
+
+function uploadPicture(picture: any, event: any) {
+    const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
+    const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
+    
+    upload('outdoor-imgs', key, picture.picture.data).then(async (data: any) => {
+        await eventModel.findByIdAndUpdate(event.id, { picture_url: data.Location });
+    }).catch((err: any) => {
+        console.log(err);
+    });
+}
 
 
 module.exports = {
