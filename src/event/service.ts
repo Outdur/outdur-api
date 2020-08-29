@@ -77,8 +77,8 @@ function uploadPicture(picture: any, event: any) {
     const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
     const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
     
-    upload('outdoor-imgs', key, picture.picture.data).then(async (data: any) => {
-        await eventModel.findByIdAndUpdate(event.id, { picture_url: data.Location });
+    upload(process.env.BUCKET_NAME, key, picture.picture.data).then(async () => {
+        await eventModel.findByIdAndUpdate(event.id, { picture_url: process.env.BUCKET_STATIC_URL + key });
     }).catch((err: any) => {
         console.log(err);
     });
