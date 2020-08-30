@@ -5,6 +5,8 @@ import { userModel } from "../user/userModel";
 import { circleModel } from "../circle/model";
 import { upload } from '../helpers/awsHelper';
 
+const MUUID = require('uuid-mongodb');
+
 
 
 const create = async (eventData: any): Promise<IEvent> => {
@@ -13,7 +15,7 @@ const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
     if (validationError) throw new handleError(422, validationError);
 
-    const newEvent = await eventModel.create(eventData);
+    const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
     if (eventData.event_picture) {
         uploadPicture(eventData.event_picture, newEvent);
@@ -54,11 +56,11 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
     const validationError = await validateEventComment(eventComment);
     if (validationError) throw new handleError(422, validationError);
 
-    return eventCommentModel.create(eventComment);
+    return eventCommentModel.create({ ...eventComment, comment_id: MUUID.v4() });
 }
 
 const getComments = async(event_id: Number): Promise<IEventComments> => {
-    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: 'firstname, lastname, photo_url' });
+    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select('-_id comment comment_id createdAt');
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
