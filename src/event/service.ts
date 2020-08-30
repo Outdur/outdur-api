@@ -1,6 +1,6 @@
 import { handleError } from "../helpers/handleError";
-import { eventModel } from './model';
-import { IEvent, IEvents } from './interface';
+import { eventModel, eventCommentModel } from './model';
+import { IEvent, IEvents, IEventComment, IEventComments } from './interface';
 import { userModel } from "../user/userModel";
 import { circleModel } from "../circle/model";
 import { upload } from '../helpers/awsHelper';
@@ -50,6 +50,17 @@ const deleteEvent = async (id: number) => {
     return eventModel.deleteOne({ _id: id });
 }
 
+const postComment = async (eventComment: IEventComment): Promise<IEventComment> => {
+    const validationError = await validateEventComment(eventComment);
+    if (validationError) throw new handleError(422, validationError);
+
+    return eventCommentModel.create(eventComment);
+}
+
+const getComments = async(event_id: Number): Promise<IEventComments> => {
+    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: 'firstname, lastname, photo_url' });
+}
+
 const validateEvent = async (event: IEvent): Promise<null | string> => {
     if (event.event_id) {
         if (!await eventModel.findOne({ event_id: event.event_id })) throw new handleError(404, 'Event not found');
@@ -76,6 +87,13 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
     return null;
 };
 
+const validateEventComment = async (comment: IEventComment): Promise<null | string> => {
+    if (!comment.comment) return 'Comment cannot be empty';
+    if (!comment.event_id) return 'Event id was not specified';
+    if (!await eventModel.findOne({ event_id: comment.event_id })) return 'Invalid event id';
+    return null;
+}
+
 
 function uploadPicture(picture: any, event: any) {
     const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
@@ -94,5 +112,7 @@ module.exports = {
     findOne,
     find,
     update,
-    deleteEvent
+    deleteEvent,
+    postComment,
+    getComments
 };

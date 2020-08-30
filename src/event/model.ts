@@ -12,7 +12,17 @@ const eventSchema = new Schema({
     event_tags: { type: String, index: 'text' },
     user_id: { type: String, index: true },
     circle_id: { type: String, index: true },
-    picture_url: String
+    picture_url: String,
+    comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]
 }, { timestamps: true });
+
+const commentSchema = new Schema({
+    comment_id: { type: String, default: MUUID.v4(), unique: true },
+    comment: String,
+    event_id: { type: String, index: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+}, { timestamps: true });
+
+export const eventCommentModel = mongoose.model('EventComment', commentSchema);
 
 export const eventModel = mongoose.model('Event', eventSchema);

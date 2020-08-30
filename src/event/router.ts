@@ -59,4 +59,24 @@ eventRouter.delete('/:id', authenticate, async (req: Request, res: Response) => 
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
-})
+});
+
+// post comment
+eventRouter.post('/:id/comments', authenticate, async (req: Request, res: Response) => {
+    try {
+        const comment = await eventService.postComment({ ...req.body, event_id: req.params.id, user: req.user.id });
+        httpResponse.send(res, 200, 'Comment posted', comment);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
+// list comments
+eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Response) => {
+    try {
+        const comments = await eventService.getComments(req.params.id);
+        httpResponse.send(res, 200, 'Comments fetched', comments);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});

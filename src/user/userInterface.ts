@@ -1,6 +1,6 @@
 
 export interface IUser extends Document {
-    _id?: string;
+    id?: string;
     user_id?: string;
     firstname?: string;
     lastname?: string;

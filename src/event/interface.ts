@@ -12,3 +12,14 @@ export interface IEvent extends Document {
 export interface IEvents extends Document {
     [key: number]: IEvent;
 }
+
+export interface IEventComment extends Document {
+    _id?: string;
+    comment: string;
+    event_id: string;
+    user_id: string
+}
+
+export interface IEventComments extends Document {
+    [key: number]: IEventComment;
+}
