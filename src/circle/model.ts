@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const circleSchema = new Schema({
-    circle_id: { type: String, default: MUUID.v4(), index: true },
+    circle_id: { type: String, default: MUUID.v4(), unique: true },
     name: String,
     description: String,
     type: { type: String, default: 'Unregistered' },

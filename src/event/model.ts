@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const eventSchema = new Schema({
-    event_id: { type: String, default: MUUID.v4(), index: true },
+    event_id: { type: String, default: MUUID.v4(), unique: true },
     title: String,
     description: String,
     venue: String,
