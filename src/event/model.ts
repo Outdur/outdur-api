@@ -9,7 +9,7 @@ const eventSchema = new Schema({
     venue: String,
     event_date: Date,
     event_tags: { type: String, index: 'text' },
-    user_id: { type: String, index: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
     circle_id: { type: String, index: true },
     picture_url: String,
     comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]

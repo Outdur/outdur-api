@@ -7,7 +7,7 @@ import { upload } from '../helpers/awsHelper';
 
 const MUUID = require('uuid-mongodb');
 
-
+const eventFields = '-_id title description venue picture_url createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
     eventData.user_id = eventData.user.id;
@@ -25,13 +25,15 @@ const create = async (eventData: any): Promise<IEvent> => {
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
-    const event = await eventModel.findOne({ event_id });
+    const event = await eventModel.findOne({ event_id }).select(eventFields).populate({ path: 'user', select: '-_id firstname lastname photo_url' });
     if (!event) throw new handleError(404, 'Event not found');
+
+    event.comments = await getComments(event_id);
     return event;
 }
 
 const find = async (): Promise<IEvents> => {
-    return eventModel.find();
+    return eventModel.find().sort('-createdAt').select(eventFields).populate({ path: 'user', select: '-_id firstname lastname photo_url' });
 }
 
 const update = async (event: any): Promise<IEvent> => {
@@ -56,7 +58,12 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
     const validationError = await validateEventComment(eventComment);
     if (validationError) throw new handleError(422, validationError);
 
-    return eventCommentModel.create({ ...eventComment, comment_id: MUUID.v4() });
+    const comment = await eventCommentModel.create({ ...eventComment, comment_id: MUUID.v4() });
+    const event = await eventModel.findOne({ event_id: eventComment.event_id }).populate('comments');
+    event.comments.push(comment);
+    event.save();
+
+    return comment;
 }
 
 const getComments = async(event_id: Number): Promise<IEventComments> => {

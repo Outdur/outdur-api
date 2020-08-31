@@ -7,7 +7,7 @@ export const activityRouter = express.Router();
 activityRouter.get('/', async (req: Request, res: Response) => {
     //await activityCategoryModel.deleteMany({});
     try {
-        const activities = await activityModel.find({}, ).populate('activity_category');
+        const activities = await activityModel.find({});
         httpResponse.send(res, 200, 'Activities fetched', { interests: activities.map((activity: any) => activity.activity_title) });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
