@@ -1,10 +1,9 @@
-const MUUID = require('uuid-mongodb');
 const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-    user_id: { type: String, default: MUUID.v4(), unique: true },
+    user_id: { type: String, unique: true },
     firstname: String,
     lastname: String,
     email: {

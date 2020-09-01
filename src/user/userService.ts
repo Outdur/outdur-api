@@ -7,6 +7,7 @@ import { activityModel } from "../activity/model";
 import { userInterestModel } from "./userInterestModel";
 import { upload } from '../helpers/awsHelper';
 const jwt = require('jsonwebtoken');
+const MUUID = require('uuid-mongodb');
 
 const create = async (userData: any) => {
     const validationError = validateNewUser(userData);
@@ -24,7 +25,7 @@ const create = async (userData: any) => {
         device_platform: userData.device_platform
     };
    
-    return userModel.create(user);
+    return userModel.create({ ...user, user_id: MUUID.v4() });
 
 }
 

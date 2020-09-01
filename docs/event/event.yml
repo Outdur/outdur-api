@@ -116,12 +116,79 @@ paths:
                         firstname: Olokpa
                         lastname: Udom
                         photo: http://photo-url  
-                        id: 1UFDHF-U989D-FHKJK3-33JJS
                       comments:
                         - comment: This is event is lit!
-                          date_posted: 12/09/2020
+                          creatdAt: 12/09/2020
                           user:
                             firstname: Olokpa
                             lastname: Udom
                             photo: http://photo-url  
-                            id: 1UFDHF-U989D-FHKJK3-33JJS  
+  /events/:id/comments:
+    post:
+      summary: Add new comment for event
+      tags: [Event]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: event id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              example:
+                comment: I will not turn up for this event
+      responses:
+          "201":
+            description: Comment added
+            content:
+              application/json:
+                  schema:
+                    type: object
+                  properties:
+                    status: 
+                      type: boolean
+                    data:
+                      type: object
+                  example:
+                    status: true
+                    data:
+                      _id: 1UFDHF-U989D-FHKJK3-33JJS
+                      comment: I will not turn up for this event
+                      comment_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      createdAt: 2020/08/12   
+    get:
+      summary: Fetch event comments
+      tags: [Event]                
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+      responses:
+        "200":
+          description: Event comment fetched
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: 
+                    type: boolean
+                  data:
+                    type: object
+                    example:
+                      comments:
+                        - comment: This is event is lit!
+                          user:
+                            firstname: Olokpa
+                            lastname: Udom
+                            photo: http://photo-url
+                          createdAt: 2020/09/03    
