@@ -7,7 +7,7 @@ import { upload } from '../helpers/awsHelper';
 
 const MUUID = require('uuid-mongodb');
 
-const eventFields = '-_id title description venue picture_url event_id createdAt';
+const eventFields = '-_id title description venue event_date picture_url event_id createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
