@@ -91,10 +91,11 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
     return null;
 };
 
-const validateEventComment = async (comment: IEventComment): Promise<null | string> => {
-    if (!comment.comment) return 'Comment cannot be empty';
-    if (!comment.event_id) return 'Event id was not specified';
-    if (!await eventModel.findOne({ event_id: comment.event_id })) return 'Invalid event id';
+const validateEventComment = async (eventComment: IEventComment): Promise<null | string> => {
+    const { comment, event_id } = eventComment;
+    if (!comment) return 'Comment cannot be empty';
+    if (!event_id) return 'Event id was not specified';
+    if (!await eventModel.findOne({ event_id })) return 'Invalid event id';
     return null;
 }
 

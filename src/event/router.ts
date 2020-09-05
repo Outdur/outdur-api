@@ -62,9 +62,9 @@ eventRouter.delete('/:event_id', authenticate, async (req: Request, res: Respons
 });
 
 // post comment
-eventRouter.post('/:id/comments', authenticate, async (req: Request, res: Response) => {
+eventRouter.post('/:event_id/comments', authenticate, async (req: Request, res: Response) => {
     try {
-        const comment = await eventService.postComment({ ...req.body, event_id: req.params.id, user: req.user.id });
+        const comment = await eventService.postComment({ ...req.body, event_id: req.params.event_id, user: req.user.id });
         httpResponse.send(res, 200, 'Comment posted', comment);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
