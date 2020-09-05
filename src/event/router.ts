@@ -52,9 +52,9 @@ eventRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
 });
 
 // delete event
-eventRouter.delete('/:id', authenticate, async (req: Request, res: Response) => {
+eventRouter.delete('/:event_id', authenticate, async (req: Request, res: Response) => {
     try {
-        await eventService.deleteEvent(req.params.id);
+        await eventService.deleteEvent(req.params.event_id);
         httpResponse.send(res, 200);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

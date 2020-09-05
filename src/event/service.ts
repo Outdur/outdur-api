@@ -48,8 +48,8 @@ const update = async (event: any): Promise<IEvent> => {
     return updatedEvent;
 }
 
-const deleteEvent = async (id: number) => {
-    return eventModel.deleteOne({ _id: id });
+const deleteEvent = async (event_id: number) => {
+    return eventModel.deleteOne({ event_id });
 }
 
 const postComment = async (eventComment: IEventComment): Promise<IEventComment> => {
