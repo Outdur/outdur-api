@@ -33,7 +33,7 @@ eventRouter.get('/:id', async (req: Request, res: Response) => {
 eventRouter.get('/', async (req: Request, res: Response) => {
     try {
         const events = await eventService.find();
-        httpResponse.send(res, 200, null, events);
+        httpResponse.send(res, 200, null, { events });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
@@ -75,7 +75,7 @@ eventRouter.post('/:event_id/comments', authenticate, async (req: Request, res: 
 eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Response) => {
     try {
         const comments = await eventService.getComments(req.params.id);
-        httpResponse.send(res, 200, 'Comments fetched', comments);
+        httpResponse.send(res, 200, 'Comments fetched', { comments });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
