@@ -9,7 +9,7 @@ export const eventRouter = express.Router();
 // create event
 eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
-        req.body.user = req.user;
+        req.body.user = req.user.id;
         const newEvent = await eventService.create({ ...req.body, event_picture: req.files });
         httpResponse.send(res, 200, null, newEvent)
     } catch (err) {

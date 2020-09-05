@@ -7,11 +7,9 @@ import { upload } from '../helpers/awsHelper';
 
 const MUUID = require('uuid-mongodb');
 
-const eventFields = '-_id title description venue picture_url createdAt';
+const eventFields = '-_id title description venue picture_url event_id createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
-    eventData.user_id = eventData.user.id;
-    delete eventData.user;
     const validationError = await validateEvent(eventData);
     if (validationError) throw new handleError(422, validationError);
 
@@ -25,7 +23,7 @@ const create = async (eventData: any): Promise<IEvent> => {
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
-    const event = await eventModel.findOne({ event_id }).select(eventFields).populate({ path: 'user', select: '-_id firstname lastname photo_url' });
+    const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select(eventFields);
     if (!event) throw new handleError(404, 'Event not found');
 
     event.comments = await getComments(event_id);
@@ -33,7 +31,7 @@ const findOne = async (event_id: number): Promise<IEvent> => {
 }
 
 const find = async (): Promise<IEvents> => {
-    return eventModel.find().sort('-createdAt').select(eventFields).populate({ path: 'user', select: '-_id firstname lastname photo_url' });
+    return eventModel.find().sort('-createdAt').populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select(eventFields);
 }
 
 const update = async (event: any): Promise<IEvent> => {
@@ -81,16 +79,13 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
         if (event.event_tags !== undefined && !event.event_tags) return 'Event must have at least one tag';
         
         // we don't want any of these to be edited
-        (['user_id', 'circle_id', 'event_id'] as const).forEach(key => { delete event[key]; });
+        (['user', 'circle_id', 'event_id'] as const).forEach(key => { delete event[key]; });
     } else {
         if (!event.title) return 'Event must have a title';
         if (!event.description) return 'Event must have a description';
         if (!event.venue) return 'Event must have a venue';
         if (!event.event_date) return 'Event must have a date';
         if (!event.event_tags) return 'Event must have at least one tag';
-        if (!event.user_id && !event.circle_id) return 'Event must have a user_id or circle_id';
-        if (event.user_id && event.circle_id) return 'Event cannot have both user_id and circle_id. Only one of them can be set';
-        if (event.user_id && !await userModel.findById(event.user_id)) return 'Invalid user_id';
         if (event.circle_id && !await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
     return null;
