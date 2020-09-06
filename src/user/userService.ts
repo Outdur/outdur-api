@@ -61,7 +61,7 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
         });
 
         // resize for thumb
-        resizeAndUpload(resizedKey, photoFile.photo.data, { width: 80 });
+        resizeAndUpload(resizedKey, photoFile.photo.data, { width: 150 });
     }
     
     const updatedUser = await userModel.findByIdAndUpdate(id, userData, { new: true });
