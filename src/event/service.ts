@@ -16,10 +16,12 @@ const create = async (eventData: any): Promise<IEvent> => {
 
     const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
+    let picture_url;
     if (eventData.event_picture) {
-        uploadPicture(eventData.event_picture, newEvent);
+        picture_url = await uploadPicture(eventData.event_picture, newEvent);
     }
 
+    newEvent.picture_url = picture_url;
     return newEvent;
 }
 
@@ -42,11 +44,12 @@ const update = async (event: any): Promise<IEvent> => {
 
     const updatedEvent = await eventModel.findOneAndUpdate({ event_id }, event, { new: true });
 
+    let picture_url;
     if (event.event_picture) {
-        uploadPicture(event.event_picture, updatedEvent);
+        picture_url = await uploadPicture(event.event_picture, updatedEvent);
     }
 
-    return updatedEvent;
+    return { ...updatedEvent, picture_url };
 }
 
 const deleteEvent = async (event_id: number) => {
@@ -101,7 +104,7 @@ const validateEventComment = async (eventComment: IEventComment): Promise<null |
 }
 
 
-function uploadPicture(picture: any, event: any) {
+const uploadPicture = async (picture: any, event: any) => {
     const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
     const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
     
@@ -113,7 +116,9 @@ function uploadPicture(picture: any, event: any) {
 
     // resize for mobile
     const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
-    resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
+    await resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
+
+    return process.env.BUCKET_STATIC_URL + key;
 }
 
 
