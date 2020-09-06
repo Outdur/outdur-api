@@ -8,6 +8,7 @@ import { resizeAndUpload } from '../helpers/imageHelper';
 const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date picture_url event_id createdAt';
+const userFields = '-_id firstname lastname thumb';
 
 const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
@@ -23,7 +24,7 @@ const create = async (eventData: any): Promise<IEvent> => {
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
-    const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select(eventFields);
+    const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields);
     if (!event) throw new handleError(404, 'Event not found');
 
     event.comments = await getComments(event_id);
@@ -31,7 +32,7 @@ const findOne = async (event_id: number): Promise<IEvent> => {
 }
 
 const find = async (): Promise<IEvents> => {
-    return eventModel.find().sort('-createdAt').populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select(eventFields);
+    return eventModel.find().sort('-createdAt').populate({ path: 'user', select: userFields }).select(eventFields);
 }
 
 const update = async (event: any): Promise<IEvent> => {
@@ -65,7 +66,7 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
 }
 
 const getComments = async(event_id: Number): Promise<IEventComments> => {
-    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: '-_id firstname lastname photo_url' }).select('-_id comment comment_id createdAt');
+    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
