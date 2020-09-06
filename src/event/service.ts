@@ -8,7 +8,7 @@ import { resizeAndUpload } from '../helpers/imageHelper';
 const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date picture_url event_id createdAt';
-const userFields = '-_id firstname lastname photo_url, thumb';
+const userFields = '-_id firstname lastname photo_url thumb';
 
 const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
