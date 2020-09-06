@@ -6,6 +6,7 @@ import { handleError } from "../helpers/handleError";
 import { activityModel } from "../activity/model";
 import { userInterestModel } from "./userInterestModel";
 import { upload } from '../helpers/awsHelper';
+import { resizeAndUpload } from '../helpers/imageHelper';
 const jwt = require('jsonwebtoken');
 const MUUID = require('uuid-mongodb');
 
@@ -48,11 +49,19 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
 
     if (photoFile) {
         const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
+        const resizedKey = `profile_photo/${id}--width-80${require('path').extname(photoFile.photo.name)}`;
         upload(process.env.BUCKET_NAME, key, photoFile.photo.data).then(async () => {
-            await userModel.findByIdAndUpdate(id, { photo_url: process.env.BUCKET_STATIC_URL + key });
+            const data = {
+                photo_url: process.env.BUCKET_STATIC_URL + key,
+                thumb: process.env.BUCKET_STATIC_URL + resizedKey
+            }
+            await userModel.findByIdAndUpdate(id, data);
         }).catch((err: any) => {
             console.log(err);
         });
+
+        // resize for thumb
+        resizeAndUpload(resizedKey, photoFile.photo.data, { width: 80 });
     }
     
     const updatedUser = await userModel.findByIdAndUpdate(id, userData, { new: true });

@@ -3,7 +3,7 @@ import { handleError } from "./handleError";
 const httpResponse = require("./httpResponse");
 
 import sharp from 'sharp';
-import { getObject, putObject } from './awsHelper';
+import { getObject, upload, putObject } from './awsHelper';
 
 export const imgServiceRouter = express.Router();
 
@@ -44,4 +44,9 @@ imgServiceRouter.get("/notfound", async (req, res) => {
 const sharpImageConverter = async (image, options) => {
     const resizedImage = await sharp(image).resize(options).sharpen(0.5).toBuffer();
     return resizedImage;
+}
+
+export const resizeAndUpload = async (key, imageData, options) => {
+    const resizedImage = await sharpImageConverter(imageData, options);
+    upload(process.env.BUCKET_NAME, key, resizedImage);
 }

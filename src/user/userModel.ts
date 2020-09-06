@@ -19,6 +19,7 @@ const userSchema = new Schema({
         }
     },
     photo_url: String,
+    thumb: String,
     device_id: { type: String, unique: true },
     device_platform: String
 }, { timestamps: true });

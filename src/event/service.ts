@@ -1,9 +1,9 @@
 import { handleError } from "../helpers/handleError";
 import { eventModel, eventCommentModel } from './model';
 import { IEvent, IEvents, IEventComment, IEventComments } from './interface';
-import { userModel } from "../user/userModel";
 import { circleModel } from "../circle/model";
 import { upload } from '../helpers/awsHelper';
+import { resizeAndUpload } from '../helpers/imageHelper';
 
 const MUUID = require('uuid-mongodb');
 
@@ -109,6 +109,10 @@ function uploadPicture(picture: any, event: any) {
     }).catch((err: any) => {
         console.log(err);
     });
+
+    // resize for mobile
+    const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
+    resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
 }
 
 
