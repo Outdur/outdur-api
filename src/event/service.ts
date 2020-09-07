@@ -7,7 +7,7 @@ import { resizeAndUpload } from '../helpers/imageHelper';
 
 const MUUID = require('uuid-mongodb');
 
-const eventFields = '-_id title description venue event_date picture_url event_id createdAt';
+const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname photo_url thumb';
 
 const create = async (eventData: any): Promise<IEvent> => {
@@ -69,7 +69,7 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
 }
 
 const getComments = async(event_id: Number): Promise<IEventComments> => {
-    return eventCommentModel.find({ event_id }).populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
+    return eventCommentModel.find({ event_id }).sort('+createdAt').populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
