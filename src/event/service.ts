@@ -4,6 +4,7 @@ import { IEvent, IEvents, IEventComment, IEventComments } from './interface';
 import { circleModel } from "../circle/model";
 import { upload } from '../helpers/awsHelper';
 import { resizeAndUpload } from '../helpers/imageHelper';
+import { userModel } from "../user/userModel";
 
 const MUUID = require('uuid-mongodb');
 
@@ -21,8 +22,9 @@ const create = async (eventData: any): Promise<IEvent> => {
         picture_url = await uploadPicture(eventData.event_picture, newEvent);
     }
 
-    newEvent.picture_url = picture_url;
-    return newEvent;
+    const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
+    event.picture_url = picture_url;
+    return event;
 }
 
 const findOne = async (event_id: number): Promise<IEvent> => {
