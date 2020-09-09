@@ -16,6 +16,9 @@ const eventSchema = new Schema({
     comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]
 }, { timestamps: true });
 
+export const eventModel = mongoose.model('Event', eventSchema);
+
+
 const commentSchema = new Schema({
     comment_id: { type: String, unique: true },
     comment: String,
@@ -25,4 +28,12 @@ const commentSchema = new Schema({
 
 export const eventCommentModel = mongoose.model('EventComment', commentSchema);
 
-export const eventModel = mongoose.model('Event', eventSchema);
+
+const eventAttendanceSchema = new Schema({
+    event_attendance_id: { type: String, unique: true },
+    event_id: { type: String, index: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    status: { type: String, default: 'Pending' }
+}, { timestamps: true });
+
+export const eventAttendanceModel = mongoose.model('EventAttendance', eventAttendanceSchema);

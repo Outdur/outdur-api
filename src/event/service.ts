@@ -4,7 +4,6 @@ import { IEvent, IEvents, IEventComment, IEventComments } from './interface';
 import { circleModel } from "../circle/model";
 import { upload } from '../helpers/awsHelper';
 import { resizeAndUpload } from '../helpers/imageHelper';
-import { userModel } from "../user/userModel";
 
 const MUUID = require('uuid-mongodb');
 
