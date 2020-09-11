@@ -3,7 +3,8 @@ import { circleModel } from './model';
 import { ICircle, ICircles } from './interface';
 import { userModel } from "../user/userModel";
 
-
+const circleFields = '-_id name description type photo_url user_id';
+const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 
 const create = async (circleData: any): Promise<ICircle> => {
     circleData.user_id = circleData.user.id;
@@ -11,17 +12,18 @@ const create = async (circleData: any): Promise<ICircle> => {
     const validationError = await validateCircle(circleData);
     if (validationError) throw new handleError(422, validationError);
 
-    return await circleModel.create(circleData);
+    const newCircle = await circleModel.create(circleData);
+    return circleModel.findById(newCircle.id).select(circleFields);
 }
 
 const findOne = async (circle_id: number): Promise<ICircle> => {
-    const circle = await circleModel.findOne({ circle_id });
+    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields);
     if (!circle) throw new handleError(404, 'Circle not found');
     return circle;
 }
 
 const findAll = async (): Promise<ICircles> => {
-    return await circleModel.find();
+    return await circleModel.find().select(circleFields);
 }
 
 const update = async (circle: ICircle): Promise<ICircle> => {

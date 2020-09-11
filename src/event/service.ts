@@ -9,7 +9,7 @@ import { userModel } from "../user/userModel";
 const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
-const userFields = '-_id firstname lastname photo_url thumb';
+const userFields = '-_id firstname lastname user_id photo_url thumb';
 
 const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
