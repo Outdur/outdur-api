@@ -33,6 +33,8 @@ const eventAttendanceSchema = new Schema({
     event_attendance_id: { type: String, unique: true },
     event_id: { type: String, index: true },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
+    email: { type: String, index: true },
+    phone: { type: StorageManager, index: true },
     status: { type: String, default: 'Pending' }
 }, { timestamps: true });
 

@@ -84,7 +84,7 @@ eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Respons
 // send event invite
 eventRouter.post('/:event_id/invites', authenticate, async (req: Request, res: Response) => {
     try {
-        const invite = await eventService.sendInvite({ ...req.body, event_id: req.params.event_id });
+        const invite = await eventService.sendInvites({ ...req.body, event_id: req.params.event_id });
         httpResponse.send(res, 200, 'Event invite sent', invite);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

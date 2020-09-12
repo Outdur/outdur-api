@@ -23,3 +23,16 @@ export interface IEventComment extends Document {
 export interface IEventComments extends Document {
     [key: number]: IEventComment;
 }
+
+export interface IEventInvite extends Document {
+    event_attendance_id?: String;
+    event_id: String;
+    user: String;
+    email?: String;
+    phone?: String;
+    status: String;
+}
+
+export interface IEventInvites extends Document {
+    [key: number]: IEventInvite;
+}
