@@ -81,21 +81,11 @@ eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Respons
     }
 });
 
-// send event invite
-eventRouter.post('/:event_id/invites', authenticate, async (req: Request, res: Response) => {
-    try {
-        const invite = await eventService.sendInvites({ ...req.body, event_id: req.params.event_id });
-        httpResponse.send(res, 200, 'Event invite sent', invite);
-    } catch (err) {
-        httpResponse.send(res, err.statusCode, err.message);
-    }
-});
-
 // list event attendees
-eventRouter.get('/:id/invites', authenticate, async (req: Request, res: Response) => {
+eventRouter.get('/:id/guests', authenticate, async (req: Request, res: Response) => {
     try {
-        const invites = await eventService.getInvites(req.params.id);
-        httpResponse.send(res, 200, 'Event invites fetched', { invites });
+        const guests = await eventService.findGuests(req.params.id);
+        httpResponse.send(res, 200, 'Event invites fetched', { guests });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }

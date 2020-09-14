@@ -33,6 +33,10 @@ const update = async (circle: ICircle): Promise<ICircle> => {
     return updatedEvent;
 }
 
+const sendInvites = async (invites: any): Promise<any> => {
+
+}
+
 const validateCircle = async (circle: ICircle): Promise<null | string> => {
     if (circle.circle_id) {
         if (!await circleModel.findOne({ circle_id: circle.circle_id })) throw new handleError(404, 'Circle not found');
@@ -57,5 +61,6 @@ module.exports = {
     create,
     findOne,
     findAll,
-    update
+    update,
+    sendInvites
 };

@@ -30,11 +30,10 @@ export const eventCommentModel = mongoose.model('EventComment', commentSchema);
 
 
 const eventAttendanceSchema = new Schema({
-    event_attendance_id: { type: String, unique: true },
     event_id: { type: String, index: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User' },
-    email: { type: String, index: true },
-    phone: { type: StorageManager, index: true },
+    inviter: { type: Schema.Types.ObjectId, ref: 'User' },
+    invitee: { type: Schema.Types.ObjectId, ref: 'User' },
+    invite: { type: Schema.Types.ObjectId, ref: 'Invite' },
     status: { type: String, default: 'Pending' }
 }, { timestamps: true });
 

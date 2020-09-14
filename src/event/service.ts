@@ -78,7 +78,7 @@ const sendInvites = async (invites: any): Promise<IEventInvite> => {
     return;
 }
 
-const getInvites = async (event_id: Number):  Promise<IEventInvites> => {
+const findGuests = async (event_id: Number):  Promise<IEventInvites> => {
     return eventAttendanceModel.findOne({ event_id }).populate({ path: 'user', select: userFields });
 }
 
@@ -143,5 +143,6 @@ module.exports = {
     update,
     deleteEvent,
     postComment,
-    getComments
+    getComments,
+    sendInvites
 };

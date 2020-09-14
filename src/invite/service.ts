@@ -5,7 +5,10 @@ import { generateCode } from "../helpers/utility"
 import { circleModel } from '../circle/model';
 import { eventModel } from '../event/model';
 import { IInvites } from "./interface";
+import { userModel } from "../user/userModel";
 const userService = require("../user/userService");
+const eventService = require("../event/service");
+const circleService = require("../circle/service");
 
 const create = async (inviteData: any) => {
     const validationResult = await validateInvite(inviteData);
@@ -17,21 +20,46 @@ const create = async (inviteData: any) => {
         throw new handleError(422, 'No valid contact was provided', invalidContacts);
     }
 
-    const invites = validContacts.map((contact: string) => {
+    const newInvites: any = [];
+    const userInvites: any = [];
+    validContacts.forEach(async (contact: string) => {
+        const data: any = {};
+        if (inviteData.event_id) data.event_id = inviteData.event_id;
+        if (inviteData.circle_id) data.circle_id = inviteData.circle_id;
+
         const key = isNumeric(contact) ? 'phone' : 'email';
-        const invite = {
-            [key]: contact,
-            code: generateCode(),
-            user: inviteData.user.id
-        };
-        if (inviteData.event_id) invite.event_id = inviteData.event_id;
-        if (inviteData.circle_id) invite.circle_id = inviteData.circle_id;
-        return invite;
+        const user = await userModel.findOne({ [key]: contact });
+        if (user) {
+            userInvites.push({ ...data, invitee: user.id, inviter: inviteData.user.id });
+        } else {
+            newInvites.push({ ...data, [key]: contact, code: generateCode(), user: inviteData.user.id });
+        }
+        // send email/sms
     });
     
-    await inviteModel.insertMany(invites, { ordered: false });
+    let insertedInvites = null;
+    if (newInvites.length) insertedInvites = await inviteModel.insertMany(newInvites, { ordered: false });
+    
+    if (inviteData.event_id) {
+        // invite old users
+        eventService.sendInvites(userInvites);
 
-    // send email/sms
+        // invite non-users
+        eventService.sendInvites(insertedInvites.map((invite: any) => { 
+            const { event_id, user } = inviteData;
+            return { invite: invite.id, event_id, inviter: user.id };
+        }));
+    }
+    if (inviteData.circle_id) {
+        // invite old users
+        circleService.sendInvites(userInvites);
+
+        // invite non-users
+        circleService.sendInvites(insertedInvites.map((invite: any) => {
+            const { circle_id, user } = inviteData;
+            return { circle_id, invite: invite.id, inviter: user.id };
+        }));
+    }
 
     return invalidContacts || [];
 }
