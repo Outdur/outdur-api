@@ -1,10 +1,11 @@
 import { handleError } from "../helpers/handleError";
-import { circleModel } from './model';
+import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
 import { userModel } from "../user/userModel";
 
 const circleFields = '-_id name description type photo_url user_id';
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
+const userFields = '-_id firstname lastname photo_url thumb';
 
 const create = async (circleData: any): Promise<ICircle> => {
     circleData.user_id = circleData.user.id;
@@ -35,6 +36,21 @@ const update = async (circle: ICircle): Promise<ICircle> => {
     return updatedEvent;
 }
 
+const sendInvites = async (invites: any): Promise<any> => {
+    return circleMemberModel.insertMany(invites, { ordered: false });
+}
+
+const findMembers = async (circle_id: Number): Promise<any> => {
+    return circleMemberModel.find({ circle_id })
+        .populate({ path: 'member', select: userFields })
+        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .select('-_id status createdAt');
+}
+
+const changeInviteStatus = async (circle_member_id: String, attending: boolean) => {
+    return circleMemberModel.findByIdAndUpdate(circle_member_id, { status: attending });
+}
+
 const validateCircle = async (circle: ICircle): Promise<null | string> => {
     if (circle.circle_id) {
         if (!await circleModel.findOne({ circle_id: circle.circle_id })) throw new handleError(404, 'Circle not found');
@@ -59,5 +75,8 @@ module.exports = {
     create,
     findOne,
     findAll,
-    update
+    update,
+    sendInvites,
+    findMembers,
+    changeInviteStatus
 };

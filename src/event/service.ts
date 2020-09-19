@@ -1,10 +1,9 @@
 import { handleError } from "../helpers/handleError";
-import { eventModel, eventCommentModel } from './model';
-import { IEvent, IEvents, IEventComment, IEventComments } from './interface';
+import { eventModel, eventCommentModel, eventAttendanceModel } from './model';
 import { circleModel } from "../circle/model";
+import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInvites } from './interface';
 import { upload } from '../helpers/awsHelper';
 import { resizeAndUpload } from '../helpers/imageHelper';
-import { userModel } from "../user/userModel";
 
 const MUUID = require('uuid-mongodb');
 
@@ -27,7 +26,7 @@ const create = async (eventData: any): Promise<IEvent> => {
     return event;
 }
 
-const findOne = async (event_id: number): Promise<IEvent> => {
+const findOne = async (event_id: string): Promise<IEvent> => {
     const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields);
     if (!event) throw new handleError(404, 'Event not found');
 
@@ -54,7 +53,7 @@ const update = async (event: any): Promise<IEvent> => {
     return { ...updatedEvent, picture_url };
 }
 
-const deleteEvent = async (event_id: number) => {
+const deleteEvent = async (event_id: string) => {
     return eventModel.deleteOne({ event_id });
 }
 
@@ -70,8 +69,24 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
     return comment;
 }
 
-const getComments = async(event_id: Number): Promise<IEventComments> => {
+const getComments = async(event_id: String): Promise<IEventComments> => {
     return eventCommentModel.find({ event_id }).sort('+createdAt').populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
+}
+
+
+const sendInvites = async (invites: any): Promise<IEventInvite> => {
+    return eventAttendanceModel.insertMany(invites, { ordered: false });
+}
+
+const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
+    return eventAttendanceModel.find({ event_id })
+        .populate({ path: 'invitee', select: userFields })
+        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .select('-_id status createdAt');
+}
+
+const changeInviteStatus = async (event_attendance_id: String, attending: boolean) => {
+    return eventAttendanceModel.findByIdAndUpdate(event_attendance_id, { status: attending });
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
@@ -131,5 +146,8 @@ module.exports = {
     update,
     deleteEvent,
     postComment,
-    getComments
+    getComments,
+    sendInvites,
+    findInvites,
+    changeInviteStatus
 };

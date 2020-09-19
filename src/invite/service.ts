@@ -5,7 +5,12 @@ import { generateCode } from "../helpers/utility"
 import { circleModel } from '../circle/model';
 import { eventModel } from '../event/model';
 import { IInvites } from "./interface";
+import { userModel } from "../user/userModel";
 const userService = require("../user/userService");
+const eventService = require("../event/service");
+const circleService = require("../circle/service");
+
+const MUUID = require('uuid-mongodb');
 
 const create = async (inviteData: any) => {
     const validationResult = await validateInvite(inviteData);
@@ -17,23 +22,58 @@ const create = async (inviteData: any) => {
         throw new handleError(422, 'No valid contact was provided', invalidContacts);
     }
 
-    const invites = validContacts.map((contact: string) => {
-        const key = isNumeric(contact) ? 'phone' : 'email';
-        const invite = {
-            [key]: contact,
-            code: generateCode(),
-            user: inviteData.user.id
-        };
-        if (inviteData.event_id) invite.event_id = inviteData.event_id;
-        if (inviteData.circle_id) invite.circle_id = inviteData.circle_id;
-        return invite;
-    });
+    const newInvites: any = [];
+    const userInvites: any = [];
     
-    await inviteModel.insertMany(invites, { ordered: false });
+    const invitesPromises = validContacts.map(async (contact: string) => {
+        const data: any = {};
+        let field: { user: string, id: string } = { user: '', id: '' };
+        if (inviteData.event_id) {
+            data.event_id = inviteData.event_id;
+            field = { user: 'invitee', id: 'attend_id' };
+        }
+        if (inviteData.circle_id) {
+            data.circle_id = inviteData.circle_id;
+            field = { user: 'member', id: 'member_id' };
+        }
 
-    // send email/sms
+        const key = isNumeric(contact) ? 'phone' : 'email';
+        const user = await userModel.findOne({ [key]: contact });
+        if (user) {
+            return { ...data, [field.user]: user.id, inviter: inviteData.user.id, [field.id]: MUUID.v4() };
+        } else {
+            return { ...data, [key]: contact, code: generateCode(), user: inviteData.user.id };
+        }
+    });
 
-    return invalidContacts || [];
+    return Promise.all(invitesPromises).then(async invites => {
+        invites.forEach((invite: any) => {
+            if (invite.code) newInvites.push(invite);
+            else userInvites.push(invite);
+        });
+
+        let insertedInvites = [];
+        if (newInvites.length) insertedInvites = await inviteModel.insertMany(newInvites, { ordered: false });
+
+        if (inviteData.event_id) {
+            // invite old users
+            eventService.sendInvites(userInvites);
+
+            // invite non-users
+            eventService.sendInvites(insertedInvites.map((invite: any) => {
+                const { event_id, user } = inviteData;
+                return { invite: invite.id, event_id, inviter: user.id };
+            }));
+        }
+        if (inviteData.circle_id) {
+            // invite old users
+            circleService.sendInvites(userInvites.map((invite:any) => ({ circle_id: invite.circle_id, member: invite.member, member_id: invite.member_id })));
+
+            // invite non-users
+            circleService.sendInvites(insertedInvites.map((invite: any) => ({ circle_id: inviteData.circle_id, invite: invite.id })));
+        }
+        return invalidContacts || [];
+    });
 }
 
 
