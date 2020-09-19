@@ -30,6 +30,7 @@ export const eventCommentModel = mongoose.model('EventComment', commentSchema);
 
 
 const eventAttendanceSchema = new Schema({
+    attend_id: { type: String, unique: true },
     event_id: { type: String, index: true },
     inviter: { type: Schema.Types.ObjectId, ref: 'User' },
     invitee: { type: Schema.Types.ObjectId, ref: 'User' },

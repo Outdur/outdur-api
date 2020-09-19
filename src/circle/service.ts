@@ -1,9 +1,9 @@
 import { handleError } from "../helpers/handleError";
-import { circleModel } from './model';
+import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
 import { userModel } from "../user/userModel";
 
-
+const userFields = '-_id firstname lastname photo_url thumb';
 
 const create = async (circleData: any): Promise<ICircle> => {
     circleData.user_id = circleData.user.id;
@@ -34,7 +34,18 @@ const update = async (circle: ICircle): Promise<ICircle> => {
 }
 
 const sendInvites = async (invites: any): Promise<any> => {
+    return circleMemberModel.insertMany(invites, { ordered: false });
+}
 
+const findMembers = async (circle_id: Number): Promise<any> => {
+    return circleMemberModel.find({ circle_id })
+        .populate({ path: 'member', select: userFields })
+        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .select('-_id status createdAt');
+}
+
+const changeInviteStatus = async (circle_member_id: String, attending: boolean) => {
+    return circleMemberModel.findByIdAndUpdate(circle_member_id, { status: attending });
 }
 
 const validateCircle = async (circle: ICircle): Promise<null | string> => {
@@ -62,5 +73,7 @@ module.exports = {
     findOne,
     findAll,
     update,
-    sendInvites
+    sendInvites,
+    findMembers,
+    changeInviteStatus
 };

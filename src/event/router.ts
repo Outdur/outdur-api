@@ -82,9 +82,9 @@ eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Respons
 });
 
 // list event attendees
-eventRouter.get('/:id/guests', authenticate, async (req: Request, res: Response) => {
+eventRouter.get('/:id/invites', authenticate, async (req: Request, res: Response) => {
     try {
-        const guests = await eventService.findGuests(req.params.id);
+        const guests = await eventService.findInvites(req.params.id);
         httpResponse.send(res, 200, 'Event invites fetched', { guests });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

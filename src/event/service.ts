@@ -75,11 +75,14 @@ const getComments = async(event_id: String): Promise<IEventComments> => {
 
 
 const sendInvites = async (invites: any): Promise<IEventInvite> => {
-    return;
+    return eventAttendanceModel.insertMany(invites, { ordered: false });
 }
 
-const findGuests = async (event_id: Number):  Promise<IEventInvites> => {
-    return eventAttendanceModel.findOne({ event_id }).populate({ path: 'user', select: userFields });
+const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
+    return eventAttendanceModel.find({ event_id })
+        .populate({ path: 'invitee', select: userFields })
+        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .select('-_id status createdAt');
 }
 
 const changeInviteStatus = async (event_attendance_id: String, attending: boolean) => {
@@ -144,5 +147,7 @@ module.exports = {
     deleteEvent,
     postComment,
     getComments,
-    sendInvites
+    sendInvites,
+    findInvites,
+    changeInviteStatus
 };

@@ -50,3 +50,13 @@ circleRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
         httpResponse.send(res, err.statusCode, err.message);
     }
 });
+
+// fetch circle members
+circleRouter.get('/:id/members', authenticate, async (req: Request, res: Response) => {
+    try {
+        const members = await circleService.findMembers(req.params.id);
+        httpResponse.send(res, 200, 'Circle members fetched', { members });
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
