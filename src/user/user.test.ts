@@ -38,28 +38,28 @@ describe('User API', () => {
         })
 
         after(async () => {
-            await userModel.findByIdAndRemove(user._id);
+            await userModel.findByIdAndRemove(user.id);
         });
 
         it('should fail if invalid email is sent', async () => {
-            const res = await chai.request(server).put(`/users/${user._id}`).send({ email: 'chi@yahoo' });
+            const res = await chai.request(server).put(`/users/${user.id}`).send({ email: 'chi@yahoo' });
             expect(res.body.status).to.eql(false);
             expect(res.body.error.code).to.eql(422);
             expect(res.body.error.message).to.equal('Contact email is invalid');
         });
 
         it('should fail if invalid phone is sent', async () => {
-            const res = await chai.request(server).put(`/users/${user._id}`).send({ phone: '7433' });
+            const res = await chai.request(server).put(`/users/${user.id}`).send({ phone: '7433' });
             expect(res.body.error.message).to.equal('Phone must not be less than 6 or greater than 15 numbers');
         });
 
         it('should fail if phone contains a letter', async () => {
-            const res = await chai.request(server).put(`/users/${user._id}`).send({ phone: '7433l' });
+            const res = await chai.request(server).put(`/users/${user.id}`).send({ phone: '7433l' });
             expect(res.body.error.message).to.equal('Phone must be numeric');
         });
 
         it('should fail if unknown field is sent', async () => {
-            const res = await chai.request(server).put(`/users/${user._id}`).send({ unkn: '7433' });
+            const res = await chai.request(server).put(`/users/${user.id}`).send({ unkn: '7433' });
             expect(res.body.error.message).to.equal('The field unkn is not allowed');
         });
 
@@ -80,7 +80,7 @@ describe('User API', () => {
         });
 
         after(async () => {
-            await userModel.findByIdAndRemove(user._id);
+            await userModel.findByIdAndRemove(user.id);
         });
 
         it('should return a 404 if user_id is not found', async () => {

@@ -22,7 +22,7 @@ const options = {
 };
 
 // Swagger set up
-exports.setupOpt = setupOpt = {
+exports.setupOpt = {
     explorer: true,
     swaggerOptions: {
         authAction: { JWT: { name: "JWT", schema: { type: "apiKey", in: "header", name: "Authorization", description: "" }, value: "Bearer <JWT>" } },
