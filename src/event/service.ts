@@ -9,6 +9,7 @@ const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname user_id photo_url thumb';
+const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
     const validationError = await validateEvent(eventData);
@@ -81,7 +82,7 @@ const sendInvites = async (invites: any): Promise<IEventInvite> => {
 const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
     return eventAttendanceModel.find({ event_id })
         .populate({ path: 'invitee', select: userFields })
-        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .populate({ path: 'invite', select: inviteFields })
         .select('-_id status createdAt');
 }
 

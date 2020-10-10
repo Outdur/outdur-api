@@ -2,10 +2,12 @@ import { handleError } from "../helpers/handleError";
 import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
 import { userModel } from "../user/userModel";
+import { inviteModel } from "../invite/model";
 
 const circleFields = '-_id name description type photo_url user_id';
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname photo_url thumb';
+const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (circleData: any): Promise<ICircle> => {
     circleData.user_id = circleData.user.id;
@@ -17,14 +19,21 @@ const create = async (circleData: any): Promise<ICircle> => {
     return circleModel.findById(newCircle.id).select(circleFields);
 }
 
-const findOne = async (circle_id: number): Promise<ICircle> => {
-    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields);
+const findOne = async (circle_id: String): Promise<ICircle> => {
+    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
     if (!circle) throw new handleError(404, 'Circle not found');
-    return circle;
+
+    const members = await findMembers(circle_id);
+    return { ...circle, members: members.members, member_count: members.member_count }
 }
 
-const findAll = async (): Promise<ICircles> => {
-    return await circleModel.find().select(circleFields);
+const findAll = async (): Promise<any> => {
+    const circles = await circleModel.find().select(`${circleFields} circle_id`).lean();
+    const allCircles = circles.map(async (circle: ICircle) => { 
+        const members = await findMembers(circle.circle_id);
+        return { ...circle, member_count: members.member_count };
+    });
+    return Promise.all(allCircles).then(circles => circles);
 }
 
 const update = async (circle: ICircle): Promise<ICircle> => {
@@ -40,11 +49,13 @@ const sendInvites = async (invites: any): Promise<any> => {
     return circleMemberModel.insertMany(invites, { ordered: false });
 }
 
-const findMembers = async (circle_id: Number): Promise<any> => {
-    return circleMemberModel.find({ circle_id })
+const findMembers = async (circle_id: String): Promise<any> => {
+    const members = await circleMemberModel.find({ circle_id }).sort('+member')
         .populate({ path: 'member', select: userFields })
-        .populate({ path: 'invite', select: '-_id code email phone status createdAt' })
+        .populate({ path: 'invite', select: inviteFields })
         .select('-_id status createdAt');
+
+    return { members, member_count: members.filter((member: any) => member.member && member.member).length };    
 }
 
 const changeInviteStatus = async (circle_member_id: String, attending: boolean) => {

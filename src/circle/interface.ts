@@ -7,7 +7,9 @@ export interface ICircle extends Document {
     description: string;
     type: string;
     user_id: string;
-    events?: IEvents
+    events?: IEvents;
+    members?: any;
+    member_count?: Number
 }
 
 export interface ICircles extends Document {
