@@ -10,7 +10,7 @@ const userFields = '-_id firstname lastname photo_url thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (circleData: any): Promise<ICircle> => {
-    circleData.user_id = circleData.user.id;
+    circleData.user_id = circleData.user.user_id;
     delete circleData.user;
     const validationError = await validateCircle(circleData);
     if (validationError) throw new handleError(422, validationError);
