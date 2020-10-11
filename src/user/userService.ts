@@ -49,7 +49,7 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
 
     if (photoFile) {
         const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
-        const resizedKey = `profile_photo/${id}--width-80${require('path').extname(photoFile.photo.name)}`;
+        const resizedKey = `profile_photo/${id}--width-150${require('path').extname(photoFile.photo.name)}`;
         upload(process.env.BUCKET_NAME, key, photoFile.photo.data).then(async () => {
             const data = {
                 photo_url: process.env.BUCKET_STATIC_URL + key,

@@ -2,25 +2,25 @@ import { handleError } from "../helpers/handleError";
 import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
 import { userModel } from "../user/userModel";
-import { inviteModel } from "../invite/model";
 
-const circleFields = '-_id name description type photo_url user_id';
+const MUUID = require('uuid-mongodb');
+
+const circleFields = '-_id name description type photo_url user';
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname photo_url thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (circleData: any): Promise<ICircle> => {
-    circleData.user_id = circleData.user.user_id;
-    delete circleData.user;
     const validationError = await validateCircle(circleData);
     if (validationError) throw new handleError(422, validationError);
 
-    const newCircle = await circleModel.create(circleData);
+    const newCircle = await circleModel.create({ ...circleData, circle_id: MUUID.v4() });
     return circleModel.findById(newCircle.id).select(circleFields);
 }
 
 const findOne = async (circle_id: String): Promise<ICircle> => {
-    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
+    const rawCircle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields });
+    const circle = rawCircle.sanitize();
     if (!circle) throw new handleError(404, 'Circle not found');
 
     const members = await findMembers(circle_id);
@@ -28,8 +28,9 @@ const findOne = async (circle_id: String): Promise<ICircle> => {
 }
 
 const findAll = async (): Promise<any> => {
-    const circles = await circleModel.find().select(`${circleFields} circle_id`).lean();
-    const allCircles = circles.map(async (circle: ICircle) => { 
+    const rawCircles = await circleModel.find();
+    const allCircles = rawCircles.map(async (circleObj: ICircle) => {
+        const circle = circleObj.sanitize();
         const members = await findMembers(circle.circle_id);
         return { ...circle, member_count: members.member_count };
     });
@@ -70,13 +71,11 @@ const validateCircle = async (circle: ICircle): Promise<null | string> => {
         if (circle.description !== undefined && !circle.description) return 'Your Circle must have a description';
         
         // we don't want any of these to be edited
-        (['user_id', 'circle_id', 'type'] as const).forEach(key => { delete circle[key]; });
+        (['user', 'circle_id', 'type'] as const).forEach(key => { delete circle[key]; });
     } else {
-        if (!await userModel.findById(circle.user_id)) return 'Invalid user_id';
         if (!circle.name) return 'Circle must have a name';
         if (!circle.description) return 'Circle must have a description';
         if (circle.type) if (!['Registered', 'Unregistered'].includes(circle.type)) return 'Invalid circle type. Valid types are Registered and Unregistered';
-        if (!circle.user_id) return 'User_id must be specified';
     }
     return null;
 };

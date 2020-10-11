@@ -9,8 +9,7 @@ export const circleRouter = express.Router();
 // create circle
 circleRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
-        req.body.user = req.user;
-        const newcircle = await circleService.create(req.body);
+        const newcircle = await circleService.create({ ...req.body, user: req.user.id, userId: req.user.user_id });
         httpResponse.send(res, 200, null, newcircle)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
@@ -33,7 +32,7 @@ circleRouter.get('/:id', async (req: Request, res: Response) => {
 circleRouter.get('/', async (req: Request, res: Response) => {
     try {
         const circles = await circleService.findAll();
-        httpResponse.send(res, 200, null, circles);
+        httpResponse.send(res, 200, null, { circles });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
