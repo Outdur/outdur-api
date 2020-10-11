@@ -9,7 +9,8 @@ export interface ICircle extends Document {
     user: string;
     events?: IEvents;
     members?: any;
-    member_count?: Number
+    member_count?: Number;
+    sanitize: () => any;
 }
 
 export interface ICircles extends Document {
