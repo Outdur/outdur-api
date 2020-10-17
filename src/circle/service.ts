@@ -15,7 +15,7 @@ const create = async (circleData: any): Promise<ICircle> => {
     if (validationError) throw new handleError(422, validationError);
 
     const newCircle = await circleModel.create({ ...circleData, circle_id: MUUID.v4() });
-    return circleModel.findById(newCircle.id).select(circleFields);
+    return newCircle.sanitize();
 }
 
 const findOne = async (circle_id: String): Promise<ICircle> => {
@@ -43,7 +43,7 @@ const update = async (circle: ICircle): Promise<ICircle> => {
     if (validationError) throw new handleError(422, validationError);
 
     const updatedEvent = await circleModel.findOneAndUpdate({ circle_id }, circle, { new: true });
-    return updatedEvent;
+    return updatedEvent.sanitize();
 }
 
 const sendInvites = async (invites: any): Promise<any> => {
