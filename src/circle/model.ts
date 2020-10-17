@@ -15,12 +15,9 @@ const circleSchema = new Schema({
 }, { timestamps: true });
 
 circleSchema.methods.sanitize = function() {
-    let rawCircles = this.toObject();
-    let circles = Array.isArray(this) ? [...rawCircles] : [rawCircles];
-    circles.forEach(circle => {
-        circleFields.forEach(field => delete circle[field])
-    });
-    return circles.length === 1 ? circles[0] : circles;
+    let circle = this.toObject();
+    circleFields.forEach(field => delete circle[field])
+    return circle;
 };
 
 export const circleModel = mongoose.model('Circle', circleSchema); 

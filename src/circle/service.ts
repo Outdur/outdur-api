@@ -1,11 +1,9 @@
 import { handleError } from "../helpers/handleError";
 import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
-import { userModel } from "../user/userModel";
 
 const MUUID = require('uuid-mongodb');
 
-const circleFields = '-_id name description type photo_url user';
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname photo_url thumb';
 const inviteFields = '-_id code email phone status createdAt';
