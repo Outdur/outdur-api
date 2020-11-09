@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const unwantedFields = ['_id', '__v', 'event_tags', 'user', 'updatedAt'];
 
 const Schema = mongoose.Schema;
 
@@ -15,6 +16,12 @@ const eventSchema = new Schema({
     picture_url: String,
     comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]
 }, { timestamps: true });
+
+eventSchema.methods.sanitize = function () {
+    let event = this.toObject();
+    unwantedFields.forEach(field => delete event[field])
+    return event;
+};
 
 export const eventModel = mongoose.model('Event', eventSchema);
 

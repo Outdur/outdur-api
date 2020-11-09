@@ -22,15 +22,16 @@ const create = async (eventData: any): Promise<IEvent> => {
         picture_url = await uploadPicture(eventData.event_picture, newEvent);
     }
 
-    const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
+    const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields });
     event.picture_url = picture_url;
-    return event;
+    return event.sanitize();
 }
 
 const findOne = async (event_id: string): Promise<IEvent> => {
-    const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields);
-    if (!event) throw new handleError(404, 'Event not found');
+    const rawEvent = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields });
+    if (!rawEvent) throw new handleError(404, 'Event not found');
 
+    const event = rawEvent.sanitize();
     event.comments = await getComments(event_id);
     return event;
 }

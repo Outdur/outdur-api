@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const circleFields = ['_id', 'updatedAt', 'circle_id', '__v', 'user', 'user_id'];
+const unwantedFields = ['_id', 'updatedAt', 'circle_id', '__v', 'user', 'user_id'];
 
 const Schema = mongoose.Schema;
 
@@ -16,7 +16,7 @@ const circleSchema = new Schema({
 
 circleSchema.methods.sanitize = function() {
     let circle = this.toObject();
-    circleFields.forEach(field => delete circle[field])
+    unwantedFields.forEach(field => delete circle[field])
     return circle;
 };
 
