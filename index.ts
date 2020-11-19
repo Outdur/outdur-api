@@ -1,5 +1,6 @@
 import express from "express";
 const fileUpload = require('express-fileupload');
+require('dotenv').config();
 import cors from "cors";
 import helmet from "helmet";
 require('./db_connection');
@@ -13,8 +14,6 @@ import { circleRouter } from "./src/circle/router";
 import { imgServiceRouter } from "./src/helpers/imageHelper";
 import { inviteRouter } from "./src/invite/router";
 import { activityRouter } from "./src/activity/router";
-
-require('dotenv').config();
 
 if (!process.env.PORT) {
     process.exit(1);

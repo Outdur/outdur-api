@@ -1,9 +1,10 @@
 import express from "express";
 import { handleError } from "./handleError";
 const httpResponse = require("./httpResponse");
+import { upload as imgUpload } from './cloudinary';
 
 import sharp from 'sharp';
-import { getObject, upload, putObject } from './awsHelper';
+// import { getObject, upload, putObject } from './awsHelper';
 
 export const imgServiceRouter = express.Router();
 
@@ -50,3 +51,5 @@ export const resizeAndUpload = async (key, imageData, options) => {
     const resizedImage = await sharpImageConverter(imageData, options);
     upload(process.env.BUCKET_NAME, key, resizedImage);
 }
+
+export const upload = imgUpload;

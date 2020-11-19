@@ -2,8 +2,9 @@ import { handleError } from "../helpers/handleError";
 import { eventModel, eventCommentModel, eventAttendanceModel } from './model';
 import { circleModel } from "../circle/model";
 import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInvites } from './interface';
-import { upload } from '../helpers/awsHelper';
-import { resizeAndUpload } from '../helpers/imageHelper';
+//import { upload } from '../helpers/awsHelper';
+import { resizeAndUpload, upload } from '../helpers/imageHelper';
+import { cloudinary } from '../helpers/cloudinary';
 
 const MUUID = require('uuid-mongodb');
 
@@ -22,18 +23,17 @@ const create = async (eventData: any): Promise<IEvent> => {
         picture_url = await uploadPicture(eventData.event_picture, newEvent);
     }
 
-    const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields });
-    event.picture_url = picture_url;
-    return event.sanitize();
+    const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
+    return event;
 }
 
 const findOne = async (event_id: string): Promise<IEvent> => {
-    const rawEvent = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields });
+    const rawEvent = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields).lean();
     if (!rawEvent) throw new handleError(404, 'Event not found');
 
-    const event = rawEvent.sanitize();
-    event.comments = await getComments(event_id);
-    return event;
+    //const event = rawEvent.sanitize();
+    rawEvent.comments = await getComments(event_id);
+    return rawEvent;
 }
 
 const find = async (): Promise<IEvents> => {
@@ -125,19 +125,29 @@ const validateEventComment = async (eventComment: IEventComment): Promise<null |
 
 const uploadPicture = async (picture: any, event: any) => {
     const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
-    const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
+    // const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
     
-    upload(process.env.BUCKET_NAME, key, picture.picture.data).then(async () => {
-        await eventModel.findByIdAndUpdate(event.id, { picture_url: process.env.BUCKET_STATIC_URL + key });
-    }).catch((err: any) => {
-        console.log(err);
-    });
+    // aws uploader
+    // upload(process.env.BUCKET_NAME, key, picture.picture.data).then(async () => {
+    //     await eventModel.findByIdAndUpdate(event.id, { picture_url: process.env.BUCKET_STATIC_URL + key });
+    // }).catch((err: any) => {
+    //     console.log(err);
+    // });
+
+    const { public_id, format, secure_url } = await upload({ file: picture.picture.data, filename: pic_name });
+    const img_url = `${public_id}.${format}`;
+    const picture_url = {
+        url: secure_url,
+        mobile: cloudinary.url(img_url, { width: 400, height: 350, crop: "fill", secure: true }),
+    };
+    await eventModel.findByIdAndUpdate(event.id, { picture_url });
+    return picture_url;
 
     // resize for mobile
-    const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
-    await resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
+    // const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
+    // await resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
 
-    return process.env.BUCKET_STATIC_URL + key;
+    // return process.env.BUCKET_STATIC_URL + key;
 }
 
 
