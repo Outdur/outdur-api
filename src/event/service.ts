@@ -18,9 +18,8 @@ const create = async (eventData: any): Promise<IEvent> => {
 
     const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
-    let picture_url;
     if (eventData.event_picture) {
-        picture_url = await uploadPicture(eventData.event_picture, newEvent);
+        await uploadPicture(eventData.event_picture, newEvent);
     }
 
     const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
@@ -47,12 +46,12 @@ const update = async (event: any): Promise<IEvent> => {
 
     const updatedEvent = await eventModel.findOneAndUpdate({ event_id }, event, { new: true });
 
-    let picture_url;
     if (event.event_picture) {
-        picture_url = await uploadPicture(event.event_picture, updatedEvent);
+        // delete old picture if title changes
+        await uploadPicture(event.event_picture, updatedEvent);
     }
 
-    return { ...updatedEvent, picture_url };
+    return updatedEvent;
 }
 
 const deleteEvent = async (event_id: string) => {
@@ -134,7 +133,7 @@ const uploadPicture = async (picture: any, event: any) => {
     //     console.log(err);
     // });
 
-    const { public_id, format, secure_url } = await upload({ file: picture.picture.data, filename: pic_name });
+    const { public_id, format, secure_url } = await upload({ file: picture.picture.data, filename: pic_name, folder: 'event-images/' });
     const img_url = `${public_id}.${format}`;
     const picture_url = {
         url: secure_url,

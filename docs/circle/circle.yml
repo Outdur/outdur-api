@@ -4,6 +4,13 @@ path:
         summary: Create circle
         description: 'A circle can be a registered organisation or just a user created group that only exist within the service'
         tags: [Circle]
+        consumes:
+          - multipart/form-data
+        parameters:
+          - in: formData
+            name: picture
+            type: file
+            description: The picture to upload
         requestBody:
           required: true
           content:
@@ -22,7 +29,6 @@ path:
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
-                  photo_url: http://photo-url
         responses:
           "201":
             description: Circle created
@@ -89,9 +95,11 @@ path:
                       - name: 'Sports Club'
                         type: 'Registered'
                         description: 'This circle is goos circle'
-                        photo_url: http://photo-url
-                        members: 13
+                        photo_url: 
+                          url: https://photo-url
+                          mobile: https://photo-url-mobile
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        member_count: 13
     /circles/:id:
       get:
         summary: Find circle and return details
@@ -112,6 +120,13 @@ path:
       put:
         summary: Update circle data
         tags: [Circle]
+        consumes:
+          - multipart/form-data
+        parameters:
+          - in: formData
+            name: picture
+            type: file
+            description: The picture to upload
         requestBody:
           required: true
           content:
@@ -128,7 +143,9 @@ path:
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
-                  photo_url: http://photo-url
+                  photo_url: 
+                    url: https://photo-url
+                    mobile: https://photo-url-mobile
         responses:
           "200":
             description: Circle updated
@@ -227,7 +244,9 @@ path:
                           description: This event is an activity   
                           event_type: circle-event
                           location: 109 Shalaba Avenue
-                          photo_url: http://photo-url
+                          picture_url: 
+                            url: https://photo-url
+                            mobile: https://photo-url-mobile
                           event_tags: 'sports, gym, challenge'
                           event_date: 23/08/2020              
       post:          
@@ -265,7 +284,9 @@ path:
                       circle_id: 1UFDHF-U989D-FHKJK3-33JJS
                       event_tags: 'sports, gym, challenge'
                       event_date: 23/08/2020
-                      photo_url: http://photo-url
+                      picture_url: 
+                        url: https://photo-url
+                        mobile: https://photo-url-mobile
       delete:
         summary: Delete circle event
         tags: [Circle Event]
