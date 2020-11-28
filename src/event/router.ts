@@ -1,5 +1,4 @@
 import express, { Request, Response } from "express";
-import { Request } from "aws-sdk";
 const eventService = require("./service");
 const httpResponse = require("../helpers/httpResponse");
 const authenticate = require('../middleware/verifyToken');
