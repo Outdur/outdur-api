@@ -228,18 +228,21 @@ paths:
                             lastname: Udom
                             user_id: 7b3da2da-e16e-49a3-af9b-e3cc68a429b7
                             thumb: http://photo-url-thumb
+                          attend_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03               
                         - status: Pending
                           invite:
                             status: pending
                             email: newuser@email.com
                             code: 96UTSD549
+                          attend_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03      
                         - status: Pending
                           invite:
                             status: pending
                             phone: 080333333333
                             code: 96UTSDXX9
+                          attend_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03        
     put:
       summary: Accept/reject event invite
