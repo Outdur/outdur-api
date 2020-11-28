@@ -9,7 +9,7 @@ import { cloudinary } from '../helpers/cloudinary';
 const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
-const userFields = '-_id firstname lastname user_id photo_url thumb';
+const userFields = '-_id firstname lastname user_id thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
@@ -67,11 +67,16 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
     event.comments.push(comment);
     event.save();
 
-    return comment;
+    return eventCommentModel.findById(comment.id)
+        .populate({ path: 'user', select: userFields })
+        .select('-_id comment comment_id createdAt');;
 }
 
 const getComments = async(event_id: String): Promise<IEventComments> => {
-    return eventCommentModel.find({ event_id }).sort('+createdAt').populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
+    return eventCommentModel.find({ event_id })
+        .sort('+createdAt')
+        .populate({ path: 'user', select: userFields })
+        .select('-_id comment comment_id createdAt');
 }
 
 
@@ -81,13 +86,14 @@ const sendInvites = async (invites: any): Promise<IEventInvite> => {
 
 const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
     return eventAttendanceModel.find({ event_id })
+        .sort('-status')
         .populate({ path: 'invitee', select: userFields })
         .populate({ path: 'invite', select: inviteFields })
-        .select('-_id status createdAt');
+        .select('-_id attend_id status createdAt');
 }
 
-const changeInviteStatus = async (event_attendance_id: String, attending: boolean) => {
-    return eventAttendanceModel.findByIdAndUpdate(event_attendance_id, { status: attending });
+const changeInviteStatus = async ({ attend_id, status }: any) => {
+    return eventAttendanceModel.findOneAndUpdate({ attend_id }, { status });
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {

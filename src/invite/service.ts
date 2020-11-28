@@ -42,7 +42,7 @@ const create = async (inviteData: any) => {
         if (user) {
             return { ...data, [field.user]: user.id, inviter: inviteData.user.id, [field.id]: MUUID.v4() };
         } else {
-            return { ...data, [key]: contact, code: generateCode(), user: inviteData.user.id };
+            return { ...data, [key]: contact, code: generateCode(), user: inviteData.user.id, [field.id]: MUUID.v4() };
         }
     });
 

@@ -17,12 +17,12 @@ const eventSchema = new Schema({
     comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]
 }, { timestamps: true });
 
-eventSchema.methods.sanitize = function () {
-    let event = this.toObject();
-    unwantedFields.forEach(field => delete event[field]);
-    //console.log(event.picture_url.get('url'))
-    return event;
-};
+// eventSchema.methods.sanitize = function () {
+//     let event = this.toObject();
+//     unwantedFields.forEach(field => delete event[field]);
+//     //console.log(event.picture_url.get('url'))
+//     return event;
+// };
 
 export const eventModel = mongoose.model('Event', eventSchema);
 

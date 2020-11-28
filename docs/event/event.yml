@@ -162,10 +162,12 @@ paths:
                   example:
                     status: true
                     data:
-                      _id: 1UFDHF-U989D-FHKJK3-33JJS
                       comment: I will not turn up for this event
                       comment_id: 1UFDHF-U989D-FHKJK3-33JJS
-                      event_id: 1UFDHF-U989D-FHKJK3-33JJS
+                      user:
+                          firstname: Olokpa
+                          lastname: Udom
+                          thumb: http://photo-url
                       createdAt: 2020/08/12   
     get:
       summary: Fetch event comments
@@ -174,7 +176,7 @@ paths:
         - in: path
           name: id
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         "200":
@@ -194,7 +196,7 @@ paths:
                           user:
                             firstname: Olokpa
                             lastname: Udom
-                            photo: http://photo-url
+                            thumb: http://photo-url
                           createdAt: 2020/09/03   
   /events/:id/invites:
     get:
@@ -204,7 +206,7 @@ paths:
         - in: path
           name: id
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         "200":
@@ -225,7 +227,6 @@ paths:
                             firstname: Olokpa
                             lastname: Udom
                             user_id: 7b3da2da-e16e-49a3-af9b-e3cc68a429b7
-                            photo: http://photo-url
                             thumb: http://photo-url-thumb
                           createdAt: 2020/09/03               
                         - status: Pending
@@ -239,4 +240,27 @@ paths:
                             status: pending
                             phone: 080333333333
                             code: 96UTSDXX9
-                          createdAt: 2020/09/03                           
+                          createdAt: 2020/09/03        
+    put:
+      summary: Accept/reject event invite
+      tags: [Event]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: event id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+              example:
+                status: accepted/rejected    
+                attend_id: 459TURT-4GKRJG4-495UGI4J 
+      responses:
+        "200":
+          description: Event invite accepted/rejected                                            
