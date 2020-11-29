@@ -70,7 +70,7 @@ const create = async (inviteData: any) => {
             circleService.sendInvites(userInvites.map((invite:any) => ({ circle_id: invite.circle_id, member: invite.member, member_id: invite.member_id })));
 
             // invite non-users
-            circleService.sendInvites(insertedInvites.map((invite: any) => ({ circle_id: inviteData.circle_id, invite: invite.id })));
+            circleService.sendInvites(insertedInvites.map((invite: any) => ({ circle_id: inviteData.circle_id, invite: invite.id, member_id: MUUID.v4() })));
         }
         return invalidContacts || [];
     });

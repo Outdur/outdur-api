@@ -52,6 +52,16 @@ circleRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     }
 });
 
+// accept or reject circle membership invite
+circleRouter.put('/:id/invites', authenticate, async (req: Request, res: Response) => {
+    try {
+        await circleService.changeInviteStatus(req.body);
+        httpResponse.send(res, 200, 'Event invite ' + req.body.status);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
 // fetch circle members
 circleRouter.get('/:id/members', authenticate, async (req: Request, res: Response) => {
     try {
