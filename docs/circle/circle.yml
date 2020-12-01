@@ -369,7 +369,30 @@ path:
                           message: 'A message that needs reply'
                           message_id: 39
                         datetime: 09/07/2020 15:27  
-
+    /circles/:id/invites:
+      put:
+        summary: Accept/reject cirlce invite
+        tags: [Circle Membership]
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: string
+            required: true
+            description: circle id
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                example:
+                  status: accepted/rejected    
+                  member_id: 459TURT-4GKRJG4-495UGI4J 
+        responses:
+          "200":
+            description: Circle invite accepted/rejected        
     /circles/:id/members:
       get:                    
         summary: Fetch circle members
@@ -397,20 +420,22 @@ path:
                             firstname: Olokpa
                             lastname: Udom
                             user_id: 7b3da2da-e16e-49a3-af9b-e3cc68a429b7
-                            photo: http://photo-url
                             thumb: http://photo-url-thumb
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03               
                         - status: Pending
                           invite:
                             status: pending
                             email: newuser@email.com
                             code: 96UTSD549
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03      
                         - status: Pending
                           invite:
                             status: pending
                             phone: 080333333333
                             code: 96UTSDXX9
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03        
     /circles/:id/members/ban:                    
       post:
@@ -441,6 +466,6 @@ path:
                       status: true
                       data:
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
-                        user_id: HGU6T-9UGGY-GIHGF-YT65R                    
+                        user_id: HGU6T-9UGGY-GIHGF-YT65R                                        
 
 
