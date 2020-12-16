@@ -49,7 +49,9 @@ components:
             description: This event is an activity   
             event_type: circle-event
             venue: 109 Shalaba Avenue
-            picture_url: http://photo-url
+            picture_url:
+              url: https://image-url
+              mobile: https://image-url-mobile
             event_tags: 'sports, gym, challenge'
             event_date: 23/08/2020
       

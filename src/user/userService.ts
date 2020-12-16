@@ -5,8 +5,10 @@ import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
 import { activityModel } from "../activity/model";
 import { userInterestModel } from "./userInterestModel";
-import { upload } from '../helpers/awsHelper';
-import { resizeAndUpload } from '../helpers/imageHelper';
+// import { upload } from '../helpers/awsHelper';
+import { upload } from '../helpers/imageHelper';
+import { cloudinary } from '../helpers/cloudinary';
+// import { resizeAndUpload } from '../helpers/imageHelper';
 const jwt = require('jsonwebtoken');
 const MUUID = require('uuid-mongodb');
 
@@ -47,25 +49,26 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
     const validationError = validateUpdateUser(userData);
     if (validationError) throw new handleError(422, validationError);
 
+    let image_url;
     if (photoFile) {
-        const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
-        const resizedKey = `profile_photo/${id}--width-150${require('path').extname(photoFile.photo.name)}`;
-        upload(process.env.BUCKET_NAME, key, photoFile.photo.data).then(async () => {
-            const data = {
-                photo_url: process.env.BUCKET_STATIC_URL + key,
-                thumb: process.env.BUCKET_STATIC_URL + resizedKey
-            }
-            await userModel.findByIdAndUpdate(id, data);
-        }).catch((err: any) => {
-            console.log(err);
-        });
+        // const key = `profile_photo/${id}${require('path').extname(photoFile.photo.name)}`;
+        // const resizedKey = `profile_photo/${id}--width-150${require('path').extname(photoFile.photo.name)}`;
+        // upload(process.env.BUCKET_NAME, key, photoFile.photo.data).then(async () => {
+        //     const data = {
+        //         photo_url: process.env.BUCKET_STATIC_URL + key,
+        //         thumb: process.env.BUCKET_STATIC_URL + resizedKey
+        //     }
+        //     await userModel.findByIdAndUpdate(id, data);
+        // }).catch((err: any) => {
+        //     console.log(err);
+        // });
+        image_url = await uploadPhoto(photoFile, id);
 
         // resize for thumb
-        resizeAndUpload(resizedKey, photoFile.photo.data, { width: 150 });
+        // resizeAndUpload(resizedKey, photoFile.photo.data, { width: 150 });
     }
     
-    const updatedUser = await userModel.findByIdAndUpdate(id, userData, { new: true });
-    return updatedUser;
+    return userModel.findByIdAndUpdate(id, { ...userData, ...image_url }, { new: true });
 }
 
 const listUserInterests = async (user_id: number): Promise<object> => {
@@ -106,7 +109,7 @@ const validateNewUser = (user: any): null | string => {
 
 const validateUpdateUser = (user: any): null | string => {
     Object.keys(user).forEach(key => {
-        if (!['phone', 'firstname', 'lastname'].includes(key)) throw new Error(`The field ${key} is not allowed`);
+        if (!['phone', 'firstname', 'lastname'].includes(key)) throw new handleError(422, `The field ${key} is not allowed`);
     });
 
     if (user.phone && isNumeric(user.phone)) {
@@ -114,6 +117,16 @@ const validateUpdateUser = (user: any): null | string => {
     } else if (user.phone && !isNumeric(user.phone)) return 'Phone must be numeric';
     if (user.email && !isEmail(user.email)) return 'Contact email is invalid';
     return null;
+}
+
+const uploadPhoto = async (image: any, user_id: String) => {
+    const { public_id, format, secure_url } = await upload({ file: image.photo.data, filename: user_id, folder: 'profile-photos/' });
+    const img_url = `${public_id}.${format}`;
+    const photo_url = {
+        photo_url: secure_url,
+        thumb: cloudinary.url(img_url, { width: 150, height: 150, crop: "fill", secure: true })
+    };
+    return photo_url;
 }
 
 module.exports = {

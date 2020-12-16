@@ -9,7 +9,9 @@ export const circleRouter = express.Router();
 // create circle
 circleRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
-        const newcircle = await circleService.create({ ...req.body, user: req.user.id, userId: req.user.user_id });
+        req.body.user = req.user.id;
+        req.body.userId = req.user.user_id;
+        const newcircle = await circleService.create({ ...req.body, circle_photo: req.files });
         httpResponse.send(res, 200, null, newcircle)
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
@@ -45,6 +47,16 @@ circleRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
         req.body.circle_id = req.params.id;
         const circle = await circleService.update(req.body);
         httpResponse.send(res, 200, null, circle);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
+// accept or reject circle membership invite
+circleRouter.put('/:id/invites', authenticate, async (req: Request, res: Response) => {
+    try {
+        await circleService.changeInviteStatus(req.body);
+        httpResponse.send(res, 200, 'Event invite ' + req.body.status);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }

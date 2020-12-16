@@ -4,6 +4,13 @@ path:
         summary: Create circle
         description: 'A circle can be a registered organisation or just a user created group that only exist within the service'
         tags: [Circle]
+        consumes:
+          - multipart/form-data
+        parameters:
+          - in: formData
+            name: picture
+            type: file
+            description: The picture to upload
         requestBody:
           required: true
           content:
@@ -22,7 +29,6 @@ path:
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
-                  photo_url: http://photo-url
         responses:
           "201":
             description: Circle created
@@ -89,9 +95,11 @@ path:
                       - name: 'Sports Club'
                         type: 'Registered'
                         description: 'This circle is goos circle'
-                        photo_url: http://photo-url
-                        members: 13
+                        photo_url: 
+                          url: https://photo-url
+                          mobile: https://photo-url-mobile
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
+                        member_count: 13
     /circles/:id:
       get:
         summary: Find circle and return details
@@ -112,6 +120,13 @@ path:
       put:
         summary: Update circle data
         tags: [Circle]
+        consumes:
+          - multipart/form-data
+        parameters:
+          - in: formData
+            name: picture
+            type: file
+            description: The picture to upload
         requestBody:
           required: true
           content:
@@ -128,7 +143,9 @@ path:
                 example:
                   name: My Estate Neighbours
                   description: These are my estate neighbours
-                  photo_url: http://photo-url
+                  photo_url: 
+                    url: https://photo-url
+                    mobile: https://photo-url-mobile
         responses:
           "200":
             description: Circle updated
@@ -227,7 +244,9 @@ path:
                           description: This event is an activity   
                           event_type: circle-event
                           location: 109 Shalaba Avenue
-                          photo_url: http://photo-url
+                          picture_url: 
+                            url: https://photo-url
+                            mobile: https://photo-url-mobile
                           event_tags: 'sports, gym, challenge'
                           event_date: 23/08/2020              
       post:          
@@ -265,7 +284,9 @@ path:
                       circle_id: 1UFDHF-U989D-FHKJK3-33JJS
                       event_tags: 'sports, gym, challenge'
                       event_date: 23/08/2020
-                      photo_url: http://photo-url
+                      picture_url: 
+                        url: https://photo-url
+                        mobile: https://photo-url-mobile
       delete:
         summary: Delete circle event
         tags: [Circle Event]
@@ -348,7 +369,30 @@ path:
                           message: 'A message that needs reply'
                           message_id: 39
                         datetime: 09/07/2020 15:27  
-
+    /circles/:id/invites:
+      put:
+        summary: Accept/reject cirlce invite
+        tags: [Circle Membership]
+        parameters:
+          - in: path
+            name: id
+            schema:
+              type: string
+            required: true
+            description: circle id
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                example:
+                  status: accepted/rejected    
+                  member_id: 459TURT-4GKRJG4-495UGI4J 
+        responses:
+          "200":
+            description: Circle invite accepted/rejected        
     /circles/:id/members:
       get:                    
         summary: Fetch circle members
@@ -376,20 +420,22 @@ path:
                             firstname: Olokpa
                             lastname: Udom
                             user_id: 7b3da2da-e16e-49a3-af9b-e3cc68a429b7
-                            photo: http://photo-url
                             thumb: http://photo-url-thumb
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03               
                         - status: Pending
                           invite:
                             status: pending
                             email: newuser@email.com
                             code: 96UTSD549
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03      
                         - status: Pending
                           invite:
                             status: pending
                             phone: 080333333333
                             code: 96UTSDXX9
+                          member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03        
     /circles/:id/members/ban:                    
       post:
@@ -420,6 +466,6 @@ path:
                       status: true
                       data:
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
-                        user_id: HGU6T-9UGGY-GIHGF-YT65R                    
+                        user_id: HGU6T-9UGGY-GIHGF-YT65R                                        
 
 

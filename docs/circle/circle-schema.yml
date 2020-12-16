@@ -35,6 +35,9 @@ components:
           name: 'Sports Club'
           type: 'Registered'
           description: 'This circle is goos circle'
+          photo_url:
+            url: 'https://photo-url'
+            mobile: 'https://photo-url-mobile'
           user:
             $ref: '#/components/schemas/User'
     CircleResponse:         
@@ -54,6 +57,6 @@ components:
             description:
               type: string  
             photo_url:
-              type: string  
-            members:
+              type: object  
+            member_count:
               type: integer     

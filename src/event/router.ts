@@ -90,3 +90,13 @@ eventRouter.get('/:id/invites', authenticate, async (req: Request, res: Response
         httpResponse.send(res, err.statusCode, err.message);
     }
 });
+
+// accept or reject event invite
+eventRouter.put('/:id/invites', authenticate, async (req: Request, res: Response) => {
+    try {
+        await eventService.changeInviteStatus(req.body);
+        httpResponse.send(res, 200, 'Event invite ' + req.body.status);
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});

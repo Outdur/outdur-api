@@ -1,13 +1,14 @@
 import { handleError } from "../helpers/handleError";
 import { circleModel, circleMemberModel } from './model';
 import { ICircle, ICircles } from './interface';
-import { userModel } from "../user/userModel";
+import { upload } from '../helpers/imageHelper';
+import { cloudinary } from '../helpers/cloudinary';
 
 const MUUID = require('uuid-mongodb');
 
-const circleFields = '-_id name description type photo_url user';
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
-const userFields = '-_id firstname lastname photo_url thumb';
+const circleFields = '-_id name description circle_id type photo_url userId events';
+const userFields = '-_id firstname lastname thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (circleData: any): Promise<ICircle> => {
@@ -15,12 +16,17 @@ const create = async (circleData: any): Promise<ICircle> => {
     if (validationError) throw new handleError(422, validationError);
 
     const newCircle = await circleModel.create({ ...circleData, circle_id: MUUID.v4() });
-    return circleModel.findById(newCircle.id).select(circleFields);
+
+    if (circleData.circle_photo) {
+        await uploadPicture(circleData.circle_photo, newCircle);
+    }
+    const circle = await circleModel.findById(newCircle.id).select(circleFields).lean();
+    return { ...circle, member_count: 0 };
 }
 
 const findOne = async (circle_id: String): Promise<ICircle> => {
-    const rawCircle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields });
-    const circle = rawCircle.sanitize();
+    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
+    //const circle = rawCircle.sanitize();
     if (!circle) throw new handleError(404, 'Circle not found');
 
     const members = await findMembers(circle_id);
@@ -28,11 +34,11 @@ const findOne = async (circle_id: String): Promise<ICircle> => {
 }
 
 const findAll = async (): Promise<any> => {
-    const rawCircles = await circleModel.find();
-    const allCircles = rawCircles.map(async (circleObj: ICircle) => {
-        const circle = circleObj.sanitize();
-        const members = await findMembers(circle.circle_id);
-        return { ...circle, member_count: members.member_count };
+    const rawCircles = await circleModel.find().select(circleFields).lean();
+    const allCircles = rawCircles.map(async (circle: ICircle) => {
+        // const circle = circleObj.sanitize();
+        const { members, member_count } = await findMembers(circle.circle_id);
+        return { ...circle, members, member_count: member_count };
     });
     return Promise.all(allCircles).then(circles => circles);
 }
@@ -43,7 +49,7 @@ const update = async (circle: ICircle): Promise<ICircle> => {
     if (validationError) throw new handleError(422, validationError);
 
     const updatedEvent = await circleModel.findOneAndUpdate({ circle_id }, circle, { new: true });
-    return updatedEvent;
+    return updatedEvent.sanitize();
 }
 
 const sendInvites = async (invites: any): Promise<any> => {
@@ -51,16 +57,18 @@ const sendInvites = async (invites: any): Promise<any> => {
 }
 
 const findMembers = async (circle_id: String): Promise<any> => {
-    const members = await circleMemberModel.find({ circle_id }).sort('+member')
+    const members = await circleMemberModel.find({ circle_id }).sort('-status')
         .populate({ path: 'member', select: userFields })
         .populate({ path: 'invite', select: inviteFields })
-        .select('-_id status createdAt');
+        .select('-_id member_id status createdAt');
 
-    return { members, member_count: members.filter((member: any) => member.member && member.member).length };    
+    return { members, member_count: members.filter((member: any) => member.member && member.status === 'accepted').length };    
 }
 
-const changeInviteStatus = async (circle_member_id: String, attending: boolean) => {
-    return circleMemberModel.findByIdAndUpdate(circle_member_id, { status: attending });
+const changeInviteStatus = async ({ member_id, status }: any) => {
+    if (!member_id || typeof member_id !== 'string') throw new handleError(422, 'Invalid member_id. Must be a string');
+    if (!['accepted', 'rejected'].includes(status)) throw new handleError(422, 'Invalid status. Must be either "acceptd" or "rejected"');
+    return circleMemberModel.findOneAndUpdate({ member_id }, { status });
 }
 
 const validateCircle = async (circle: ICircle): Promise<null | string> => {
@@ -79,6 +87,19 @@ const validateCircle = async (circle: ICircle): Promise<null | string> => {
     }
     return null;
 };
+
+const uploadPicture = async (picture: any, circle: any) => {
+    const pic_name = circle.name.split(' ').join('-') + `_${circle.id}`;
+    
+    const { public_id, format, secure_url } = await upload({ file: picture.picture.data, filename: pic_name, folder: 'circle-photos/' });
+    const img_url = `${public_id}.${format}`;
+    const photo_url = {
+        url: secure_url,
+        mobile: cloudinary.url(img_url, { width: 400, height: 350, crop: "fill", secure: true }),
+    };
+    await circleModel.findByIdAndUpdate(circle.id, { photo_url });
+    return photo_url;
+}
 
 
 module.exports = {

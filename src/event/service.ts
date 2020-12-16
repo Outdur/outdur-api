@@ -2,13 +2,14 @@ import { handleError } from "../helpers/handleError";
 import { eventModel, eventCommentModel, eventAttendanceModel } from './model';
 import { circleModel } from "../circle/model";
 import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInvites } from './interface';
-import { upload } from '../helpers/awsHelper';
-import { resizeAndUpload } from '../helpers/imageHelper';
+//import { upload } from '../helpers/awsHelper';
+import { resizeAndUpload, upload } from '../helpers/imageHelper';
+import { cloudinary } from '../helpers/cloudinary';
 
 const MUUID = require('uuid-mongodb');
 
 const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
-const userFields = '-_id firstname lastname user_id photo_url thumb';
+const userFields = '-_id firstname lastname user_id thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (eventData: any): Promise<IEvent> => {
@@ -17,22 +18,21 @@ const create = async (eventData: any): Promise<IEvent> => {
 
     const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
-    let picture_url;
     if (eventData.event_picture) {
-        picture_url = await uploadPicture(eventData.event_picture, newEvent);
+        await uploadPicture(eventData.event_picture, newEvent);
     }
 
     const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
-    event.picture_url = picture_url;
     return event;
 }
 
 const findOne = async (event_id: string): Promise<IEvent> => {
-    const event = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields);
-    if (!event) throw new handleError(404, 'Event not found');
+    const rawEvent = await eventModel.findOne({ event_id }).populate({ path: 'user', select: userFields }).select(eventFields).lean();
+    if (!rawEvent) throw new handleError(404, 'Event not found');
 
-    event.comments = await getComments(event_id);
-    return event;
+    //const event = rawEvent.sanitize();
+    rawEvent.comments = await getComments(event_id);
+    return rawEvent;
 }
 
 const find = async (): Promise<IEvents> => {
@@ -46,12 +46,12 @@ const update = async (event: any): Promise<IEvent> => {
 
     const updatedEvent = await eventModel.findOneAndUpdate({ event_id }, event, { new: true });
 
-    let picture_url;
     if (event.event_picture) {
-        picture_url = await uploadPicture(event.event_picture, updatedEvent);
+        // delete old picture if title changes
+        await uploadPicture(event.event_picture, updatedEvent);
     }
 
-    return { ...updatedEvent, picture_url };
+    return updatedEvent;
 }
 
 const deleteEvent = async (event_id: string) => {
@@ -67,11 +67,16 @@ const postComment = async (eventComment: IEventComment): Promise<IEventComment> 
     event.comments.push(comment);
     event.save();
 
-    return comment;
+    return eventCommentModel.findById(comment.id)
+        .populate({ path: 'user', select: userFields })
+        .select('-_id comment comment_id createdAt');;
 }
 
 const getComments = async(event_id: String): Promise<IEventComments> => {
-    return eventCommentModel.find({ event_id }).sort('+createdAt').populate({ path: 'user', select: userFields }).select('-_id comment comment_id createdAt');
+    return eventCommentModel.find({ event_id })
+        .sort('+createdAt')
+        .populate({ path: 'user', select: userFields })
+        .select('-_id comment comment_id createdAt');
 }
 
 
@@ -81,13 +86,14 @@ const sendInvites = async (invites: any): Promise<IEventInvite> => {
 
 const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
     return eventAttendanceModel.find({ event_id })
+        .sort('-status')
         .populate({ path: 'invitee', select: userFields })
         .populate({ path: 'invite', select: inviteFields })
-        .select('-_id status createdAt');
+        .select('-_id attend_id status createdAt');
 }
 
-const changeInviteStatus = async (event_attendance_id: String, attending: boolean) => {
-    return eventAttendanceModel.findByIdAndUpdate(event_attendance_id, { status: attending });
+const changeInviteStatus = async ({ attend_id, status }: any) => {
+    return eventAttendanceModel.findOneAndUpdate({ attend_id }, { status });
 }
 
 const validateEvent = async (event: IEvent): Promise<null | string> => {
@@ -124,19 +130,29 @@ const validateEventComment = async (eventComment: IEventComment): Promise<null |
 
 const uploadPicture = async (picture: any, event: any) => {
     const pic_name = event.title.split(' ').join('-') + `_${event.id}`;
-    const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
+    // const key = `event_pictures/${pic_name}${require('path').extname(picture.picture.name)}`;
     
-    upload(process.env.BUCKET_NAME, key, picture.picture.data).then(async () => {
-        await eventModel.findByIdAndUpdate(event.id, { picture_url: process.env.BUCKET_STATIC_URL + key });
-    }).catch((err: any) => {
-        console.log(err);
-    });
+    // aws uploader
+    // upload(process.env.BUCKET_NAME, key, picture.picture.data).then(async () => {
+    //     await eventModel.findByIdAndUpdate(event.id, { picture_url: process.env.BUCKET_STATIC_URL + key });
+    // }).catch((err: any) => {
+    //     console.log(err);
+    // });
+
+    const { public_id, format, secure_url } = await upload({ file: picture.picture.data, filename: pic_name, folder: 'event-images/' });
+    const img_url = `${public_id}.${format}`;
+    const picture_url = {
+        url: secure_url,
+        mobile: cloudinary.url(img_url, { width: 400, height: 350, crop: "fill", secure: true }),
+    };
+    await eventModel.findByIdAndUpdate(event.id, { picture_url });
+    return picture_url;
 
     // resize for mobile
-    const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
-    await resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
+    // const resizedKey = `event_pictures/${pic_name}--width-400${require('path').extname(picture.picture.name)}`;
+    // await resizeAndUpload(resizedKey, picture.picture.data, { width: 400 });
 
-    return process.env.BUCKET_STATIC_URL + key;
+    // return process.env.BUCKET_STATIC_URL + key;
 }
 
 

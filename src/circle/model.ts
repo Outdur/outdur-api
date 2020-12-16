@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const circleFields = ['_id', 'updatedAt', 'circle_id', '__v', 'user', 'user_id'];
+const unwantedFields = ['_id', 'updatedAt', 'circle_id', '__v', 'user', 'user_id'];
 
 const Schema = mongoose.Schema;
 
@@ -8,19 +8,16 @@ const circleSchema = new Schema({
     name: String,
     description: String,
     type: { type: String, default: 'Unregistered' },
-    photo_url: String,
+    photo_url: { type: Map, of: String },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     userId: { type: String, index: true },
     events: [{ type: Schema.Types.ObjectId, ref: 'Event' }]
 }, { timestamps: true });
 
 circleSchema.methods.sanitize = function() {
-    let rawCircles = this.toObject();
-    let circles = Array.isArray(this) ? [...rawCircles] : [rawCircles];
-    circles.forEach(circle => {
-        circleFields.forEach(field => delete circle[field])
-    });
-    return circles.length === 1 ? circles[0] : circles;
+    let circle = this.toObject();
+    unwantedFields.forEach(field => delete circle[field])
+    return circle;
 };
 
 export const circleModel = mongoose.model('Circle', circleSchema); 
