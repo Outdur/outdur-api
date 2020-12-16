@@ -6,6 +6,7 @@ chai.use(chaiHttp);
 const server = require('../../index');
 import { userModel } from '../../src/user/userModel';
 const userService = require('../../src/user/userService');
+// const userService = require('../../src/user/userService');
 import { IUser } from '../../src/user/userInterface';
 
 describe('User API', () => {
