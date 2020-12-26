@@ -3,7 +3,7 @@ import { eventModel, eventCommentModel, eventAttendanceModel } from './model';
 import { circleModel } from "../circle/model";
 import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInvites } from './interface';
 //import { upload } from '../helpers/awsHelper';
-import { resizeAndUpload, upload } from '../helpers/imageHelper';
+import { upload } from '../helpers/imageHelper';
 import { cloudinary } from '../helpers/cloudinary';
 
 const MUUID = require('uuid-mongodb');

@@ -4,7 +4,7 @@
   "description": "Outdur Dashboard API",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register src/**/*.test.ts",
+    "test": "mocha --file test/bootstrap.test.js --timeout 10000 -r ts-node/register src/**/*.test.ts",
     "start": "node dist/index",
     "webpack": "webpack --config webpack.config.ts"
   },

@@ -1,0 +1,12 @@
+[
+    {
+        "email": "test@email.com",
+        "code": "680FJDKM43",
+        "status": "Pending"
+    },
+    {
+        "phone": "090333333333",
+        "code": "FFSEF969459",
+        "status": "Pending"
+    }
+]
