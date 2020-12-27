@@ -16,7 +16,7 @@ before(async() => {
         console.log(error);
     }
 
-    fs.readdirSync('test/fixtures').forEach(name => { 
+    fs.readdirSync('test/fixtures').filter(name => require('path').extname(name) === '.json').forEach(name => { 
         fixtures[name.split('.')[0]] = require(`./fixtures/${name}`);
     });
 
