@@ -437,10 +437,16 @@ path:
                             code: 96UTSDXX9
                           member_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03        
-    /circles/:id/members/ban:                    
-      post:
-        summary: Ban circle member
+      patch:
+        summary: Remove circle member
         tags: [Circle Membership]
+        parameters:
+          - in: path
+            id:
+            schema:
+              type: string
+              description: circle id
+            required: true
         requestBody:
           required: true
           content:
@@ -448,15 +454,13 @@ path:
               schema:
                 type: object
                 properties:
-                  circle_id:
-                    type: integer 
+                  member_id:
+                    type: string 
                 example:
-                  circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
-                  user_id: HGU6T-9UGGY-GIHGF-YT65R 
-                  reason: Bigot          
+                  member_id: HGU6T-9UGGY-GIHGF-YT65R 
         responses:
           "200":
-            description: Member banned from circle
+            description: Member removed from circle
             content:
               application/json:
                   schema:
@@ -466,6 +470,6 @@ path:
                       status: true
                       data:
                         circle_id: FIRUI-VE8498-4UVFJ-FN4JHK
-                        user_id: HGU6T-9UGGY-GIHGF-YT65R                                        
+                        member_id: HGU6T-9UGGY-GIHGF-YT65R                                        
 
 
