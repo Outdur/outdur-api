@@ -25,7 +25,7 @@ const create = async (circleData: any): Promise<ICircle> => {
 }
 
 const findOne = async (circle_id: String): Promise<ICircle> => {
-    const circle = await circleModel.findOne({ circle_id }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
+    const circle = await circleModel.findOne({ circle_id, deleted: false }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
     //const circle = rawCircle.sanitize();
     if (!circle) throw new handleError(404, 'Circle not found');
 
@@ -33,8 +33,10 @@ const findOne = async (circle_id: String): Promise<ICircle> => {
     return { ...circle, members: members.members, member_count: members.member_count }
 }
 
-const findAll = async (): Promise<any> => {
-    const rawCircles = await circleModel.find().select(circleFields).lean();
+const findAll = async (user_id: String | null): Promise<any> => {
+    const criteria: any = { deleted: false };
+    if (user_id) criteria.user_id = user_id;
+    const rawCircles = await circleModel.find(criteria).select(circleFields).lean();
     const allCircles = rawCircles.map(async (circle: ICircle) => {
         // const circle = circleObj.sanitize();
         const { members, member_count } = await findMembers(circle.circle_id);
@@ -56,19 +58,23 @@ const sendInvites = async (invites: any): Promise<any> => {
     return circleMemberModel.insertMany(invites, { ordered: false });
 }
 
-const findMembers = async (circle_id: String): Promise<any> => {
-    const members = await circleMemberModel.find({ circle_id }).sort('-status')
-        .populate({ path: 'member', select: userFields })
-        .populate({ path: 'invite', select: inviteFields })
-        .select('-_id member_id status createdAt');
-
-    return { members, member_count: members.filter((member: any) => member.member && member.status === 'accepted').length };    
-}
-
 const changeInviteStatus = async ({ member_id, status }: any) => {
     if (!member_id || typeof member_id !== 'string') throw new handleError(422, 'Invalid member_id. Must be a string');
     if (!['accepted', 'rejected'].includes(status)) throw new handleError(422, 'Invalid status. Must be either "acceptd" or "rejected"');
     return circleMemberModel.findOneAndUpdate({ member_id }, { status });
+}
+
+const findMembers = async (circle_id: String): Promise<any> => {
+    const members = await circleMemberModel.find({ circle_id, deleted: false }).sort('-status')
+        .populate({ path: 'member', select: userFields })
+        .populate({ path: 'invite', select: inviteFields })
+        .select('-_id member_id status createdAt');
+
+    return { members, member_count: members.filter((member: any) => member.member && member.status === 'accepted').length };
+}
+
+const removeMember = async (circle_admin: string, circle_id: String, member_id: String): Promise<any> => {
+    return await circleMemberModel.findOneAndUpdate({ user: circle_admin, circle_id, member_id }, { deleted: true });
 }
 
 const validateCircle = async (circle: ICircle): Promise<null | string> => {
@@ -109,5 +115,6 @@ module.exports = {
     update,
     sendInvites,
     findMembers,
-    changeInviteStatus
+    changeInviteStatus,
+    removeMember
 };
