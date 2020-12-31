@@ -3,6 +3,10 @@ const unwantedFields = ['_id', '__v', 'event_tags', 'user', 'updatedAt'];
 
 const Schema = mongoose.Schema;
 
+const eventScope = {
+    scope: String
+};
+
 const eventSchema = new Schema({
     event_id: { type: String, unique: true },
     title: String,
@@ -14,7 +18,8 @@ const eventSchema = new Schema({
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     circle_id: { type: String, index: true },
     picture_url: { type: Map, of: String },
-    comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }]
+    comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }],
+    deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 // eventSchema.methods.sanitize = function () {
@@ -32,6 +37,7 @@ const commentSchema = new Schema({
     comment: String,
     event_id: { type: String, index: true },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
+    deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export const eventCommentModel = mongoose.model('EventComment', commentSchema);
@@ -43,7 +49,8 @@ const eventAttendanceSchema = new Schema({
     inviter: { type: Schema.Types.ObjectId, ref: 'User' },
     invitee: { type: Schema.Types.ObjectId, ref: 'User' },
     invite: { type: Schema.Types.ObjectId, ref: 'Invite' },
-    status: { type: String, default: 'Pending' }
+    status: { type: String, default: 'Pending' },
+    deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export const eventAttendanceModel = mongoose.model('EventAttendance', eventAttendanceSchema);

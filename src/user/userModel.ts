@@ -18,6 +18,7 @@ const userSchema = new Schema({
             partialFilterExpression: { phone: { $type: "string" } }
         }
     },
+    interestIds: [String],
     photo_url: String,
     thumb: String,
     device_id: { type: String, unique: true },

@@ -8,21 +8,20 @@ export const userRouter = express.Router();
 
 
 // list users interests
-userRouter.get('/interests', authenticate, async (req: Request, res: Response) => {
-    try {
-        const userinterests = await userService.listUserInterests(req.user.user_id);
-        httpResponse.send(res, 200, null, { interests: userinterests.interests.map((interest: any) => interest.activity_title) });
-    } catch (err) {
-        httpResponse.send(res, err.statusCode, err.message);
-    }
-});
+// userRouter.get('/interests', authenticate, async (req: Request, res: Response) => {
+//     try {
+//         const userinterests = await userService.listUserInterests(req.user.user_id);
+//         httpResponse.send(res, 200, null, { interests: userinterests.interests.map((interest: any) => interest.activity_title) });
+//     } catch (err) {
+//         httpResponse.send(res, err.statusCode, err.message);
+//     }
+// });
 
 
 // update user interests
 userRouter.put('/interests', authenticate, async (req: Request, res: Response) => {
     try {
-        req.body.user_id = req.user.user_id;
-        await userService.updateInterest(req.body);
+        await userService.updateInterest({ ...req.body, user_id: req.user.user_id });
         httpResponse.send(res, 200, 'User Interest updated');
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);

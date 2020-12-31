@@ -24,7 +24,7 @@ describe('User API', () => {
         
         before(async () => {
             user = await userModel.create(userData[0]);
-            jwtToken = userService.generateUserToken(user);
+            jwtToken = await userService.generateUserToken(user);
         });
 
         after(async () => {

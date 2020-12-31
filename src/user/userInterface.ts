@@ -6,6 +6,7 @@ export interface IUser extends Document {
     lastname?: string;
     email?: string;
     phone?: string;
+    interestIds: [String];
     device_id: String;
     device_platform: String;
 }
