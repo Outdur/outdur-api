@@ -11,7 +11,8 @@ const circleSchema = new Schema({
     photo_url: { type: Map, of: String },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
     userId: { type: String, index: true },
-    events: [{ type: Schema.Types.ObjectId, ref: 'Event' }]
+    events: [{ type: Schema.Types.ObjectId, ref: 'Event' }],
+    deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 circleSchema.methods.sanitize = function() {
@@ -27,7 +28,8 @@ const circleMemberSchema = new Schema({
     circle_id: { type: String, index: true },
     member: { type: Schema.Types.ObjectId, ref: 'User' },
     invite: { type: Schema.Types.ObjectId, ref: 'Invite' },
-    status: { type: String, default: 'Pending' }
+    status: { type: String, default: 'Pending' },
+    deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
 export const circleMemberModel = mongoose.model('CircleMember', circleMemberSchema);

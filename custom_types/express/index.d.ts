@@ -7,4 +7,10 @@ declare global {
             files: Object;
         }
     }
+
+    namespace NodeJS {
+        interface Global {
+            fixtures: any
+        }
+    }
 }

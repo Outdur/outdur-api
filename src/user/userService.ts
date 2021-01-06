@@ -71,29 +71,26 @@ const update = async (userData: any, photoFile: any | null): Promise<IUser | any
     return userModel.findByIdAndUpdate(id, { ...userData, ...image_url }, { new: true });
 }
 
-const listUserInterests = async (user_id: number): Promise<object> => {
-    return userInterestModel.findOne({ user_id }).populate('interests');
-}
+// const listUserInterests = async (user_id: number): Promise<object> => {
+//     return userInterestModel.findOne({ user_id }).populate('interests');
+// }
 
 const updateInterest = async (userInterests: any): Promise<any> => {
     if (Array.isArray(userInterests.interests) && !userInterests.interests.length) throw new handleError(422, 'Interest cannot be empty');
     if (!userInterests.interests || !Array.isArray(userInterests.interests)) throw new handleError(422, 'Interests field must be an array');
 
-    let userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id });
-    if (!userInterest) userInterest = await userInterestModel.create({ user_id: userInterests.user_id });
-
-    userInterests.interests.forEach(async (interest: string) => {
-        const foundInterest = await activityModel.findOne({ activity_title: interest });
-        if (foundInterest) {
-            userInterest = await userInterestModel.findOne({ user_id: userInterests.user_id }).populate('interests');
-            userInterest.interests.find((_interest: any) => _interest.activity_title !== interest) && userInterest.interests.push(foundInterest);
-            await userInterest.save();
-        }
-    });
+    
+    const validInterests = await activityModel.find({ activity_title: { $in: userInterests.interests } });
+    if (validInterests) {
+        const user = await userModel.findOne({ user_id: userInterests.user_id }).populate('interestIds');
+        validInterests.forEach((interest: any) => !user.interestIds.includes(interest.id) && user.interestIds.push(interest.id));
+        await user.save();
+    }
 }
 
-const generateUserToken = (user: IUser): string => {
-    const payload = { contact: user.email ? user.email : user.phone, id: user.id, user_id: user.user_id };
+const generateUserToken = async (user: IUser): Promise<string> => {
+    const interests = await activityModel.find({ activity_title: { $in: user.interestIds } });
+    const payload = { contact: user.email ? user.email : user.phone, id: user.id, user_id: user.user_id, interests };
     return jwt.sign(payload, process.env.JWT_SECRET);
 }
 
@@ -135,6 +132,5 @@ module.exports = {
     find,
     update,
     updateInterest,
-    listUserInterests,
     generateUserToken
 }

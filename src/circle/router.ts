@@ -30,10 +30,11 @@ circleRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 
-// find many circles
+// find circles
 circleRouter.get('/', async (req: Request, res: Response) => {
     try {
-        const circles = await circleService.findAll();
+        const user_id = req.user.user_id;
+        const circles = await circleService.findAll(user_id);
         httpResponse.send(res, 200, null, { circles });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
@@ -67,6 +68,18 @@ circleRouter.get('/:id/members', authenticate, async (req: Request, res: Respons
     try {
         const members = await circleService.findMembers(req.params.id);
         httpResponse.send(res, 200, 'Circle members fetched', { members });
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
+// remove circle member
+circleRouter.patch('/:id/members', authenticate, async (req: Request, res: Response) => {
+    try {
+        const circle_id = req.params.id;
+        const circle_admin = req.user.id;
+        const member = await circleService.removeMember(circle_admin, circle_id, req.body.member_id);
+        httpResponse.send(res, 200, 'Circle member removed', { member });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }
