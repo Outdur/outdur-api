@@ -21,12 +21,12 @@ imgServiceRouter.get("/notfound", async (req, res) => {
         const splittedFilenameByTasks = imgFilename.split('--');
         if (splittedFilenameByTasks.length === 1) throw new handleError(400, 'There\'s nothing to do here');
 
-        const tasks = {}
+        const tasks = {};
         splittedFilenameByTasks.splice(1).forEach((task) => {
             const [key, value] = task.split('-');
             if (!acceptedTasks.includes(key)) throw new handleError(400, 'This operation is not allowed');
             tasks[key] = parseInt(value, 10);
-            return
+            return;
         });
 
         // download the original image
