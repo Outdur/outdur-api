@@ -1,0 +1,10 @@
+[
+    {
+        "title": "An event for testing",
+        "description": "Description of the event",
+        "venue": "Genesis Cinema",
+        "event_date": "2021-03-22",
+        "event_tags": "outdoor, picnic, camping",
+        "event_time": "10:00 AM"
+    }
+]

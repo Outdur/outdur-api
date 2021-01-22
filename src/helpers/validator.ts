@@ -26,3 +26,7 @@ export const isLength = (value: any, option: any): boolean => {
 export const isNumeric = (value: string|number): boolean => {
     return !isNaN(Number(value));
 }
+
+export const isValidUUIDV4 = (value: string): boolean => {
+    return new RegExp('^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$').test(value);
+}

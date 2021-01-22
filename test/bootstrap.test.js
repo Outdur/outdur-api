@@ -42,6 +42,6 @@ after(async () => {
             console.log(error.message);
         }
     }
-    // await testDB.connection.db.dropDatabase();
+    await testDB.connection.db.dropDatabase();
     await testDB.connection.close();
 });
