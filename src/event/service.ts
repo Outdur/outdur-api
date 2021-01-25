@@ -9,13 +9,15 @@ import { isValidUUIDV4 } from '../helpers/validator';
 
 const MUUID = require('uuid-mongodb');
 
-const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
+const eventFields = '-_id title description venue event_scope event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname user_id thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
 const create = async (eventData: any): Promise<object> => {
     const validationError = await validateEvent(eventData);
     if (typeof validationError === 'string') throw new handleError(422, validationError);
+
+    if (!eventData.event_scope.length) throw new handleError(422, 'No valid event scope found', validationError);
 
     const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
@@ -119,7 +121,7 @@ const validateEvent = async (event: IEvent): Promise<any> => {
         if (!event.event_tags) return 'Event must have at least one tag';
         if (event.circle_id && !await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
-    console.log(event)
+
     if (!event.event_scope || !Array.isArray(event.event_scope)) return 'Event must have a scope and the scope must be an array'
     
     const scope_errors = [];
@@ -132,22 +134,22 @@ const validateEvent = async (event: IEvent): Promise<any> => {
         if (!['users', 'circles'].includes(evt_scope.scope)) {
             isScopeValid = false;
             scope_errors.push({
-                invalidScope: evt_scope.scope,
-                message: 'Invalid scope'
+                error_type: 'Invalid scope',
+                message: `'${evt_scope.scope}' is not an acceptable scope`
             });
         }
         if (!evt_scope.values || !Array.isArray(evt_scope.values)) {
             isScopeValid = false;
             scope_errors.push({
-                invalidValues: evt_scope.values,
-                message: `Invalid ${evt_scope.scope} values. 'values' must be an array`
+                error_type: 'Invalid scope value',
+                message: `Scope 'values' not specified or not an array`
             });
         }
-        evt_scope.values.forEach((value: string) => {
+        evt_scope.values && evt_scope.values.forEach((value: string) => {
             if (!isValidUUIDV4(value)) {
                 isScopeValid = false;
                 scope_errors.push({
-                    invalidValue: evt_scope.value,
+                    error_type: 'Invalid scope value',
                     message: 'Invalid value. Value must be of type UUID v4'
                 });
             }
@@ -155,7 +157,7 @@ const validateEvent = async (event: IEvent): Promise<any> => {
         
         if (!isScopeValid) event.event_scope.splice(i, 1);
     }
-    return null;
+    return scope_errors;
 };
 
 const validateEventComment = async (eventComment: IEventComment): Promise<null | string> => {

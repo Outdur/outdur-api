@@ -4,32 +4,15 @@ const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
 
-const server = require('../../test/index');
-
-import { userModel } from './userModel';
-const userService = require('../../src/user/userService');
-import { IUser } from './userInterface';
-
-let userData: any;
-let jwtToken: string;
+const server = require('../../index');
 
 describe('User API', () => {
+    let jwtToken: string;
     before(() => {
-        const { users } = global.fixtures;
-        userData = users;
+        jwtToken = global.fixtures.jwtToken;
     });
 
     describe('PUT /users', async () => {
-        let user: IUser;
-        
-        before(async () => {
-            user = await userModel.create(userData[0]);
-            jwtToken = await userService.generateUserToken(user);
-        });
-
-        after(async () => {
-            await userModel.deleteOne({ user_id: "1" });
-        });
 
         it('should fail if attempt is made to change unpermitted fields', async () => {
             const res = await chai.request(server).put('/users').set('Authorization', `bearer ${jwtToken}`).send({ email: 'chi@yahoo' });

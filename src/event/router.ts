@@ -12,7 +12,7 @@ eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
         const { event, metadata } = await eventService.create({ ...req.body, user: req.user.id, event_picture: req.files });
         httpResponse.send(res, 201, null, event, metadata);
     } catch (err) {
-        httpResponse.send(res, err.statusCode, err.message);
+        httpResponse.send(res, err.statusCode, err.message, '', err.data);
     }
 });
 

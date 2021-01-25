@@ -3,32 +3,19 @@ import chaiHttp from 'chai-http';
 const chaiAsPromised = require("chai-as-promised");
 chai.use(chaiAsPromised);
 chai.use(chaiHttp);
-const server = require('../../test/index');
+const server = require('../../index');
 import { userModel } from '../../src/user/userModel';
 const inviteService = require('../../src/invite/Service');
 const userService = require('../../src/user/userService');
 import { IUser } from '../../src/user/userInterface';
 
-let userData: any;
-let jwtToken: string;
-
 describe('Invite API', () => {
+    let jwtToken: string;
     before(() => {
-        const { users } = global.fixtures;
-        userData = users;
+        jwtToken = global.fixtures.jwtToken;
     });
 
     describe('POST invite/send', () => {
-        let user: IUser;
-
-        before(async () => {
-            user = await userModel.create(userData[0]);
-            jwtToken = await userService.generateUserToken(user);
-        });
-
-        after(async () => {
-            await userModel.deleteOne({ user_id: "1" });
-        });
 
         it('should fail if email is invalid', async () => {
             const res = await chai.request(server).post('/invites/send').set('Authorization', `bearer ${jwtToken}`).send({ contact: 'chi@yahoo' });
