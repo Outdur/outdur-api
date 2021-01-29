@@ -4,7 +4,7 @@ import { isEmail, isLength, isNumeric } from "../helpers/validator";
 import { userModel } from './userModel';
 import { handleError } from "../helpers/handleError";
 import { activityModel } from "../activity/model";
-import { userInterestModel } from "./userInterestModel";
+import { circleModel, circleMemberModel } from "../circle/model";
 // import { upload } from '../helpers/awsHelper';
 import { upload } from '../helpers/imageHelper';
 import { cloudinary } from '../helpers/cloudinary';
@@ -89,8 +89,9 @@ const updateInterest = async (userInterests: any): Promise<any> => {
 }
 
 const generateUserToken = async (user: IUser): Promise<string> => {
-    const interests = await activityModel.find({ activity_title: { $in: user.interestIds } });
-    const payload = { contact: user.email ? user.email : user.phone, id: user.id, user_id: user.user_id, interests };
+    const interests = await activityModel.find({ id: { $in: user.interestIds } }).select('-_id activity_title').lean();
+    const circleIds = await circleModel.find({ user: user.id }).distinct('_id');
+    const payload = { contact: user.email ? user.email : user.phone, id: user.id, user_id: user.user_id, interests, circles: circleIds };
     return jwt.sign(payload, process.env.JWT_SECRET);
 }
 

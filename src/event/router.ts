@@ -9,11 +9,10 @@ export const eventRouter = express.Router();
 // create event
 eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
     try {
-        req.body.user = req.user.id;
-        const newEvent = await eventService.create({ ...req.body, event_picture: req.files });
-        httpResponse.send(res, 200, null, newEvent)
+        const { event, metadata } = await eventService.create({ ...req.body, user: req.user.id, event_picture: req.files });
+        httpResponse.send(res, 201, null, event, metadata);
     } catch (err) {
-        httpResponse.send(res, err.statusCode, err.message);
+        httpResponse.send(res, err.statusCode, err.message, '', err.data);
     }
 });
 
@@ -30,9 +29,9 @@ eventRouter.get('/:id', async (req: Request, res: Response) => {
 
 
 // find many events
-eventRouter.get('/', async (req: Request, res: Response) => {
+eventRouter.get('/', authenticate, async (req: Request, res: Response) => {
     try {
-        const events = await eventService.find();
+        const events = await eventService.find(req.user);
         httpResponse.send(res, 200, null, { events });
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
@@ -43,9 +42,8 @@ eventRouter.get('/', async (req: Request, res: Response) => {
 // update event
 eventRouter.put('/:id', authenticate, async (req: Request, res: Response) => {
     try {
-        req.body.event_id = req.params.id;
-        const event = await eventService.update(req.body);
-        httpResponse.send(res, 200, null, event);
+        const { event, metadata } = await eventService.update({ ...req.body, event_id: req.params.id });
+        httpResponse.send(res, 200, null, event, metadata);
     } catch (err) {
         httpResponse.send(res, err.statusCode, err.message);
     }

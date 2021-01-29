@@ -45,6 +45,11 @@ const findAll = async (user_id: String | null): Promise<any> => {
     return Promise.all(allCircles).then(circles => circles);
 }
 
+const fetchUserCirclesNames = async (user_id: String): Promise<[String]> => {
+    const criteria = { deleted: false, user_id };
+    return circleModel.find(criteria).select('-_id activity_title').lean();
+}
+
 const update = async (circle: ICircle): Promise<ICircle> => {
     const circle_id = circle.circle_id;
     const validationError = await validateCircle(circle);
@@ -112,6 +117,7 @@ module.exports = {
     create,
     findOne,
     findAll,
+    fetchUserCirclesNames,
     update,
     sendInvites,
     findMembers,

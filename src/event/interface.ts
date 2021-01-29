@@ -5,6 +5,7 @@ export interface IEvent extends Document {
     venue: string;
     event_date: string;
     event_tags?: String;
+    event_scope: [any]
     user?: string;
     circle_id?: String;
 }

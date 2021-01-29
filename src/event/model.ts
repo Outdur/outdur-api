@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
-const unwantedFields = ['_id', '__v', 'event_tags', 'user', 'updatedAt'];
+// const unwantedFields = ['_id', '__v', 'event_tags', 'user', 'updatedAt'];
 
 const Schema = mongoose.Schema;
-
-const eventScope = {
-    scope: String
-};
 
 const eventSchema = new Schema({
     event_id: { type: String, unique: true },
@@ -16,6 +12,10 @@ const eventSchema = new Schema({
     event_time: String,
     event_tags: { type: String, index: 'text' },
     user: { type: Schema.Types.ObjectId, ref: 'User' },
+    event_scope: [{
+        scope: String,
+        values: [String]
+    }],
     circle_id: { type: String, index: true },
     picture_url: { type: Map, of: String },
     comments: [{ type: Schema.Types.ObjectId, ref: 'EventComment' }],

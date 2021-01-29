@@ -5,16 +5,19 @@ import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInv
 //import { upload } from '../helpers/awsHelper';
 import { upload } from '../helpers/imageHelper';
 import { cloudinary } from '../helpers/cloudinary';
+import { isValidUUIDV4 } from '../helpers/validator';
 
 const MUUID = require('uuid-mongodb');
 
-const eventFields = '-_id title description venue event_date event_time picture_url event_id createdAt';
+const eventFields = '-_id title description venue event_scope event_date event_time picture_url event_id createdAt';
 const userFields = '-_id firstname lastname user_id thumb';
 const inviteFields = '-_id code email phone status createdAt';
 
-const create = async (eventData: any): Promise<IEvent> => {
+const create = async (eventData: any): Promise<object> => {
     const validationError = await validateEvent(eventData);
-    if (validationError) throw new handleError(422, validationError);
+    if (typeof validationError === 'string') throw new handleError(422, validationError);
+
+    if (!eventData.event_scope.length) throw new handleError(422, 'No valid event scope found', validationError);
 
     const newEvent = await eventModel.create({ ...eventData, event_id: MUUID.v4() });
 
@@ -23,7 +26,7 @@ const create = async (eventData: any): Promise<IEvent> => {
     }
 
     const event = await eventModel.findById(newEvent.id).populate({ path: 'user', select: userFields }).select(eventFields);
-    return event;
+    return validationError.length ? { event, metadata: validationError } : { event };
 }
 
 const findOne = async (event_id: string): Promise<IEvent> => {
@@ -35,14 +38,16 @@ const findOne = async (event_id: string): Promise<IEvent> => {
     return rawEvent;
 }
 
-const find = async (): Promise<IEvents> => {
-    return eventModel.find().sort('-createdAt').populate({ path: 'user', select: userFields }).select(eventFields);
+const find = async (user: any): Promise<IEvents> => {
+    const scopeValues = [...user.circles, user.id];
+    const criteria = { "event_scope.values": { "$in": scopeValues }};
+    return eventModel.find(criteria).sort('-createdAt').populate({ path: 'user', select: userFields }).select(eventFields);
 }
 
-const update = async (event: any): Promise<IEvent> => {
+const update = async (event: any): Promise<object> => {
     const event_id = event.event_id;
     const validationError = await validateEvent(event);
-    if (validationError) throw new handleError(422, validationError);
+    if (typeof validationError === 'string') throw new handleError(422, validationError);
 
     const updatedEvent = await eventModel.findOneAndUpdate({ event_id }, event, { new: true });
 
@@ -51,7 +56,7 @@ const update = async (event: any): Promise<IEvent> => {
         await uploadPicture(event.event_picture, updatedEvent);
     }
 
-    return updatedEvent;
+    return validationError.length ? { event: updatedEvent, metadata: validationError } : { event: updatedEvent };
 }
 
 const deleteEvent = async (event_id: string) => {
@@ -96,7 +101,7 @@ const changeInviteStatus = async ({ attend_id, status }: any) => {
     return eventAttendanceModel.findOneAndUpdate({ attend_id }, { status });
 }
 
-const validateEvent = async (event: IEvent): Promise<null | string> => {
+const validateEvent = async (event: IEvent): Promise<any> => {
     if (event.event_id) {
         if (!await eventModel.findOne({ event_id: event.event_id })) throw new handleError(404, 'Event not found');
 
@@ -116,7 +121,43 @@ const validateEvent = async (event: IEvent): Promise<null | string> => {
         if (!event.event_tags) return 'Event must have at least one tag';
         if (event.circle_id && !await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
-    return null;
+
+    if (!event.event_scope || !Array.isArray(event.event_scope)) return 'Event must have a scope and the scope must be an array'
+    
+    const scope_errors = [];
+    let isScopeValid;
+    let evt_scope: any = {};   
+    for (let i = 0; i < event.event_scope.length; i++) {
+        evt_scope = event.event_scope[i];
+        isScopeValid = true;
+        
+        if (!['users', 'circles'].includes(evt_scope.scope)) {
+            isScopeValid = false;
+            scope_errors.push({
+                error_type: 'Invalid scope',
+                message: `'${evt_scope.scope}' is not an acceptable scope`
+            });
+        }
+        if (!evt_scope.values || !Array.isArray(evt_scope.values)) {
+            isScopeValid = false;
+            scope_errors.push({
+                error_type: 'Invalid scope value',
+                message: `Scope 'values' not specified or not an array`
+            });
+        }
+        evt_scope.values && evt_scope.values.forEach((value: string) => {
+            if (!isValidUUIDV4(value)) {
+                isScopeValid = false;
+                scope_errors.push({
+                    error_type: 'Invalid scope value',
+                    message: 'Invalid value. Value must be of type UUID v4'
+                });
+            }
+        });
+        
+        if (!isScopeValid) event.event_scope.splice(i, 1);
+    }
+    return scope_errors;
 };
 
 const validateEventComment = async (eventComment: IEventComment): Promise<null | string> => {
