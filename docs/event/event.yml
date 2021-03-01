@@ -198,9 +198,9 @@ paths:
                             lastname: Udom
                             thumb: http://photo-url
                           createdAt: 2020/09/03   
-  /events/:id/invites:
+  /events/:id/guests:
     get:
-      summary: Fetch event invites
+      summary: Fetch event guests
       tags: [Event]                
       parameters:
         - in: path
@@ -210,7 +210,7 @@ paths:
           required: true
       responses:
         "200":
-          description: Event invites fetched
+          description: Event guests fetched
           content:
             application/json:
               schema:
@@ -228,21 +228,21 @@ paths:
                             lastname: Udom
                             user_id: 7b3da2da-e16e-49a3-af9b-e3cc68a429b7
                             thumb: http://photo-url-thumb
-                          attend_id: 459TURT-4GKRJG4-495UGI4J   
+                          guest_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03               
                         - status: Pending
                           invite:
                             status: pending
                             email: newuser@email.com
                             code: 96UTSD549
-                          attend_id: 459TURT-4GKRJG4-495UGI4J   
+                          guest_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03      
                         - status: Pending
                           invite:
                             status: pending
                             phone: 080333333333
                             code: 96UTSDXX9
-                          attend_id: 459TURT-4GKRJG4-495UGI4J   
+                          guest_id: 459TURT-4GKRJG4-495UGI4J   
                           createdAt: 2020/09/03        
     put:
       summary: Accept/reject event invite
@@ -263,7 +263,7 @@ paths:
               properties:
               example:
                 status: accepted/rejected    
-                attend_id: 459TURT-4GKRJG4-495UGI4J 
+                guest_id: 459TURT-4GKRJG4-495UGI4J 
       responses:
         "200":
           description: Event invite accepted/rejected                                            

@@ -30,7 +30,7 @@ const create = async (inviteData: any) => {
         let field: { user: string, id: string } = { user: '', id: '' };
         if (inviteData.event_id) {
             data.event_id = inviteData.event_id;
-            field = { user: 'invitee', id: 'attend_id' };
+            field = { user: 'guest', id: 'guest_id' };
         }
         if (inviteData.circle_id) {
             data.circle_id = inviteData.circle_id;

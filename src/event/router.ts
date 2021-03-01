@@ -79,8 +79,19 @@ eventRouter.get('/:id/comments', authenticate, async (req: Request, res: Respons
     }
 });
 
-// list event attendees
-eventRouter.get('/:id/invites', authenticate, async (req: Request, res: Response) => {
+// join event
+eventRouter.post('/:id/guests', authenticate, async (req: Request, res: Response) => {
+    try {
+        const event_id = req.params.id;
+        const guest = await eventService.joinEvent(event_id, req.user.id);
+        httpResponse.send(res, 201, 'Success', { guest });
+    } catch (err) {
+        httpResponse.send(res, err.statusCode, err.message);
+    }
+});
+
+// list event guests
+eventRouter.get('/:id/guests', authenticate, async (req: Request, res: Response) => {
     try {
         const guests = await eventService.findInvites(req.params.id);
         httpResponse.send(res, 200, 'Event invites fetched', { guests });

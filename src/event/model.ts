@@ -43,14 +43,14 @@ const commentSchema = new Schema({
 export const eventCommentModel = mongoose.model('EventComment', commentSchema);
 
 
-const eventAttendanceSchema = new Schema({
-    attend_id: { type: String, unique: true },
+const eventGuestSchema = new Schema({
+    guest_id: { type: String, unique: true },
     event_id: { type: String, index: true },
     inviter: { type: Schema.Types.ObjectId, ref: 'User' },
-    invitee: { type: Schema.Types.ObjectId, ref: 'User' },
+    guest: { type: Schema.Types.ObjectId, ref: 'User' },
     invite: { type: Schema.Types.ObjectId, ref: 'Invite' },
     status: { type: String, default: 'Pending' },
     deleted: { type: Boolean, default: false }
 }, { timestamps: true });
 
-export const eventAttendanceModel = mongoose.model('EventAttendance', eventAttendanceSchema);
+export const eventGuestModel = mongoose.model('EventAttendance', eventGuestSchema);

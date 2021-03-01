@@ -1,11 +1,12 @@
 import { handleError } from "../helpers/handleError";
-import { eventModel, eventCommentModel, eventAttendanceModel } from './model';
+import { eventModel, eventCommentModel, eventGuestModel } from './model';
 import { circleModel } from "../circle/model";
 import { IEvent, IEvents, IEventComment, IEventComments, IEventInvite, IEventInvites } from './interface';
 //import { upload } from '../helpers/awsHelper';
 import { upload } from '../helpers/imageHelper';
 import { cloudinary } from '../helpers/cloudinary';
 import { isValidUUIDV4 } from '../helpers/validator';
+import { IUser } from "../user/userInterface";
 
 const MUUID = require('uuid-mongodb');
 
@@ -86,19 +87,27 @@ const getComments = async(event_id: String): Promise<IEventComments> => {
 
 
 const sendInvites = async (invites: any): Promise<IEventInvite> => {
-    return eventAttendanceModel.insertMany(invites, { ordered: false });
+    return eventGuestModel.insertMany(invites, { ordered: false });
 }
 
 const findInvites = async (event_id: Number):  Promise<IEventInvites> => {
-    return eventAttendanceModel.find({ event_id })
+    return eventGuestModel.find({ event_id })
         .sort('-status')
         .populate({ path: 'invitee', select: userFields })
         .populate({ path: 'invite', select: inviteFields })
-        .select('-_id attend_id status createdAt');
+        .select('-_id guest_id status createdAt');
 }
 
-const changeInviteStatus = async ({ attend_id, status }: any) => {
-    return eventAttendanceModel.findOneAndUpdate({ attend_id }, { status });
+const changeInviteStatus = async ({ guest_id, status }: any) => {
+    return eventGuestModel.findOneAndUpdate({ guest_id }, { status });
+}
+
+const joinEvent = async (event_id: String, user: IUser): Promise<Object> => {
+    return eventGuestModel.create({
+        guest_id: MUUID.v4(),
+        event_id,
+        status: 'accepted'
+    });
 }
 
 const validateEvent = async (event: IEvent): Promise<any> => {
@@ -213,5 +222,6 @@ module.exports = {
     getComments,
     sendInvites,
     findInvites,
-    changeInviteStatus
+    changeInviteStatus,
+    joinEvent
 };
