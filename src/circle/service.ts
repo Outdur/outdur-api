@@ -26,7 +26,6 @@ const create = async (circleData: any): Promise<ICircle> => {
 
 const findOne = async (circle_id: String): Promise<ICircle> => {
     const circle = await circleModel.findOne({ circle_id, deleted: false }).populate({ path: 'events', select: eventFields }).select(circleFields).lean();
-    //const circle = rawCircle.sanitize();
     if (!circle) throw new handleError(404, 'Circle not found');
 
     const members = await findMembers(circle_id);
@@ -38,9 +37,8 @@ const findAll = async (user_id: String | null): Promise<any> => {
     if (user_id) criteria.user_id = user_id;
     const rawCircles = await circleModel.find(criteria).select(circleFields).lean();
     const allCircles = rawCircles.map(async (circle: ICircle) => {
-        // const circle = circleObj.sanitize();
         const { members, member_count } = await findMembers(circle.circle_id);
-        return { ...circle, members, member_count: member_count };
+        return { ...circle, members, member_count };
     });
     return Promise.all(allCircles).then(circles => circles);
 }

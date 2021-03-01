@@ -122,6 +122,12 @@ const validateEvent = async (event: IEvent): Promise<any> => {
         if (event.circle_id && !await circleModel.findOne({ event_id: event.circle_id })) return 'Invalid circle_id';
     }
 
+    // add scope to circle events
+    if (event.circle_id) {
+        delete event.event_scope; // probably doesn't exist,but...
+        event.event_scope = [{ scope: 'circles', values: [event.circle_id] }];
+    }
+
     if (!event.event_scope || !Array.isArray(event.event_scope)) return 'Event must have a scope and the scope must be an array'
     
     const scope_errors = [];

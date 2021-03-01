@@ -28,7 +28,7 @@ eventRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 
-// find many events
+// find events
 eventRouter.get('/', authenticate, async (req: Request, res: Response) => {
     try {
         const events = await eventService.find(req.user);

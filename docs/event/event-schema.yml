@@ -28,7 +28,14 @@ components:
         event_date:
             type: date      
         picture:
-            type: string     
+            type: string  
+        event_scope:
+            type: object
+            properties:
+              scope:
+                type: string
+              values:
+                type: array  
       example:
           title: Weekend Road walk 
           description: This event is an activity   
@@ -36,6 +43,11 @@ components:
           venue: 109 Shalaba Avenue
           event_tags: 'sports, gym, challenge'
           event_date: 23/08/2020
+          event_scope:
+            - scope: circles
+              values: ['1UFDHF-U989D-FHKJK3-33JJS']
+            - scope: users
+              values: ['1UFDHF-U989D-FHKJK3-33JJS']
     EventResponse:
       type: object
       properties:
