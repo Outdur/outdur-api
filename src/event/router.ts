@@ -18,7 +18,7 @@ eventRouter.post('/', authenticate, async (req: Request, res: Response) => {
 
 
 // find one event
-eventRouter.get('/:id', async (req: Request, res: Response) => {
+eventRouter.get('/:id', authenticate, async (req: Request, res: Response) => {
     try {
         const event = await eventService.findOne(req.params.id);
         httpResponse.send(res, 200, null, event)

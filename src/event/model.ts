@@ -54,3 +54,4 @@ const eventGuestSchema = new Schema({
 }, { timestamps: true });
 
 export const eventGuestModel = mongoose.model('EventAttendance', eventGuestSchema);
+
